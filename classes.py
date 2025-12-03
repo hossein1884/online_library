@@ -73,6 +73,16 @@ class Book:
     translators:list[Translator]=list()
     genreses:list[Genre]=list()
     languages:list[Language]=list()
+    
+
+
+
+
+
+
+
+
+
 
 class AuthorsDataAdapter:
     @staticmethod

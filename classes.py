@@ -95,7 +95,20 @@ class AuthorsDataAdapter:
         for auth in auths:
             authors.append(Author(auth[0],auth[1],auth[2],auth[3],auth[4],auth[5]))
         return authors
-    
+    @staticmethod
+    def insert(author:Author)->Author:
+        sql=f"INSERT INTO authors (national_code, name, last_name, birthday, grade) VALUES ('{author.national_code}','{author.name}','{author.last_name}','{author.birthday}','{author.grade}')"
+        cur.execute(sql)
+        cn.commit()
+        author.id=cur.lastrowid
+        return author
+    @staticmethod
+    def delete(id:int)->bool:
+        if id not in cur.execute("SELECT author_id FROM book_author"):
+            cur.execute(f"DELETE FROM authors where id={id}")
+            cn.commit()
+            return True
+        return False
 
 
 
@@ -111,8 +124,20 @@ class TranslatorsDataAdapter:
         for transl in transls:
             translators.append(Translator(transl[0],transl[1],transl[2],transl[3],transl[4]))
         return translators
-    
-
+    @staticmethod
+    def insert(translator:Translator)->Translator:
+        sql=f"INSERT INTO translators (national_code, name, last_name, birthday, grade) VALUES ('{translator.national_code}','{translator.name}','{translator.last_name}','{translator.birthday}','{translator.grade}')"
+        cur.execute(sql)
+        cn.commit()
+        translator.id=cur.lastrowid
+        return translator    
+    @staticmethod
+    def delete(id:int)->bool:
+        if id not in cur.execute("SELECT translator_id FROM book_translator"):
+            cur.execute(f"DELETE FROM translators where id={id}")
+            cn.commit()
+            return True
+        return False
 
 
 class PublishersDataAdapter:
@@ -154,8 +179,20 @@ class ResourcesDataAdapter:
         for resor in resors:
             resources.append(Resource(resor[0],resor[1],resor[2],resor[3]))
         return resources
-    
-
+    @staticmethod
+    def insert(resource:Resource)->Resource:
+        sql=f"INSERT INTO publishers (title, type, establish_date) VALUES ('{resource.title}','{resource.type}','{resource.establish_date}')"
+        cur.execute(sql)
+        cn.commit()
+        resource.id=cur.lastrowid
+        return resource
+    @staticmethod
+    def delete(id:int)->bool:
+        if id not in cur.execute("SELECT resource_id FROM book_resource"):
+            cur.execute(f"DELETE FROM resources where id={id}")
+            cn.commit()
+            return True
+        return False
 
 
 class EsrbsDataAdapter:
@@ -169,7 +206,22 @@ class EsrbsDataAdapter:
         for esrbse in esrbses:
             esrbs.append(Esrb(esrbse[0],esrbse[1]))
         return esrbs
-
+    
+    @staticmethod
+    def insert(esrb:Esrb)->Esrb:
+        sql=f"INSERT INTO esrb_ratings (name) VALUES ('{esrb.name}')"
+        cur.execute(sql)
+        cn.commit()
+        esrb.id=cur.lastrowid
+        return esrb 
+    
+    @staticmethod
+    def delete(id:int)->bool:
+        if id not in cur.execute("SELECT esrb_rating_id FROM books"):
+            cur.execute(f"DELETE FROM esrb_ratings where id={id}")
+            cn.commit()
+            return True
+        return False
 
 
 
@@ -185,7 +237,20 @@ class GenresDataAdapter:
         for genrese in genreses:
             genres.append(Genre(genrese[0],genrese[1]))
         return genres
-    
+    @staticmethod
+    def insert(genre:Genre)->Genre:
+        sql=f"INSERT INTO genres (name) VALUES ('{genre.name}')"
+        cur.execute(sql)
+        cn.commit()
+        genre.id=cur.lastrowid
+        return genre  
+    @staticmethod
+    def delete(id:int)->bool:
+        if id not in cur.execute("SELECT genre_id FROM book_genre"):
+            cur.execute(f"DELETE FROM genres where id={id}")
+            cn.commit()
+            return True
+        return False
 
 
 
@@ -200,5 +265,18 @@ class LanguagesDataAdapter:
         for Lang in Langs:
             Languages.append(Language(Lang[0],Lang[1]))
         return Languages
-
+    @staticmethod
+    def insert(language:Language)->Language:
+        sql=f"INSERT INTO esrb_ratings (name) VALUES ('{language.name}')"
+        cur.execute(sql)
+        cn.commit()
+        language.id=cur.lastrowid
+        return language 
+    @staticmethod
+    def delete(id:int)->bool:
+        if id not in cur.execute("SELECT language_id FROM book_language"):
+            cur.execute(f"DELETE FROM languages where id={id}")
+            cn.commit()
+            return True
+        return False
 

@@ -71,7 +71,7 @@ class Book:
     resources:list[Resource]=list()
     authors:list[Author]=list
     translators:list[Translator]=list()
-    genreses:list[Genre]=list()
+    genres:list[Genre]=list()
     languages:list[Language]=list()
     
 
@@ -79,7 +79,28 @@ class Book:
 
 
 
+class BooksDataAdapter:
+    @staticmethod
+    def delete(id:int)->bool:
+        if id in cur.execute("SELECT id FROM books"):
+            if id in cur.execute("SELECT book_id FROM book_author"):
+                cur.execute(f"DELETE FROM book_author where book_id={id}")
 
+            if id in cur.execute("SELECT book_id FROM book_translator"):
+                cur.execute(f"DELETE FROM book_translator where book_id={id}")
+
+            if id in cur.execute("SELECT book_id FROM book_resource"):
+                cur.execute(f"DELETE FROM book_resource where book_id={id}")
+
+            if id in cur.execute("SELECT book_id FROM book_language"):
+                cur.execute(f"DELETE FROM book_language where book_id={id}")
+
+            if id in cur.execute("SELECT book_id FROM book_genre"):    
+                cur.execute(f"DELETE FROM book_genre where book_id={id}")
+
+            cn.commit()
+            return True
+        return False
 
 
 
@@ -104,7 +125,7 @@ class AuthorsDataAdapter:
         return author
     @staticmethod
     def delete(id:int)->bool:
-        if id not in cur.execute("SELECT author_id FROM book_author"):
+        if id in cur.execute("SELECT id FROM books"):
             cur.execute(f"DELETE FROM authors where id={id}")
             cn.commit()
             return True
@@ -232,9 +253,9 @@ class GenresDataAdapter:
         genres=[]
         cn=sqlite3.connect("students.db")
         cur=cn.cursor()
-        genreses=cur.execute("SELECT * FROM genres")
+        genres=cur.execute("SELECT * FROM genres")
 
-        for genrese in genreses:
+        for genrese in genres:
             genres.append(Genre(genrese[0],genrese[1]))
         return genres
     @staticmethod

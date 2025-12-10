@@ -83,20 +83,17 @@ class BooksDataAdapter:
     @staticmethod
     def delete(id:int)->bool:
         if id in cur.execute("SELECT id FROM books"):
-            if id in cur.execute("SELECT book_id FROM book_author"):
-                cur.execute(f"DELETE FROM book_author where book_id={id}")
+            cur.execute(f"DELETE FROM book_author where book_id={id}")
 
-            if id in cur.execute("SELECT book_id FROM book_translator"):
-                cur.execute(f"DELETE FROM book_translator where book_id={id}")
+            cur.execute(f"DELETE FROM book_translator where book_id={id}")
 
-            if id in cur.execute("SELECT book_id FROM book_resource"):
-                cur.execute(f"DELETE FROM book_resource where book_id={id}")
+            cur.execute(f"DELETE FROM book_resource where book_id={id}")
 
-            if id in cur.execute("SELECT book_id FROM book_language"):
-                cur.execute(f"DELETE FROM book_language where book_id={id}")
+            cur.execute(f"DELETE FROM book_language where book_id={id}")
 
-            if id in cur.execute("SELECT book_id FROM book_genre"):    
-                cur.execute(f"DELETE FROM book_genre where book_id={id}")
+            cur.execute(f"DELETE FROM book_genre where book_id={id}")
+
+            cur.execute(f"DELETE FROM books where id={id}")
 
             cn.commit()
             return True

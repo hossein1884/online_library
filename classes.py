@@ -112,7 +112,6 @@ class AuthorsDataAdapter:
 
 
 
-
 class TranslatorsDataAdapter:
     @staticmethod
     def get_all()->list:
@@ -138,6 +137,7 @@ class TranslatorsDataAdapter:
             cn.commit()
             return True
         return False
+
 
 
 class PublishersDataAdapter:
@@ -195,6 +195,7 @@ class ResourcesDataAdapter:
         return False
 
 
+
 class EsrbsDataAdapter:
     @staticmethod
     def get_all()->list:
@@ -222,7 +223,6 @@ class EsrbsDataAdapter:
             cn.commit()
             return True
         return False
-
 
 
 

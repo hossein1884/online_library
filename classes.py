@@ -81,6 +81,17 @@ class Book:
 
 class BooksDataAdapter:
     @staticmethod
+    def get_all()->list:
+        books=[]
+        cn=sqlite3.connect("students.db")
+        cur=cn.cursor()
+        boks=cur.execute("SELECT * FROM books")
+
+        for book in boks:
+            books.append(Book(book[0],book[1],book[2],book[3],book[4],book[5]))
+        return books
+    
+    @staticmethod
     def delete(id:int)->bool:
         if id in cur.execute("SELECT id FROM books"):
             cur.execute(f"DELETE FROM book_author where book_id={id}")
@@ -298,3 +309,5 @@ class LanguagesDataAdapter:
             return True
         return False
 
+b1=BooksDataAdapter.get_all()
+print(b1)

@@ -83,12 +83,11 @@ class BooksDataAdapter:
     @staticmethod
     def get_all()->list:
         books=[]
-        cn=sqlite3.connect("students.db")
-        cur=cn.cursor()
         boks=cur.execute("SELECT * FROM books")
 
         for book in boks:
             books.append(Book(book[0],book[1],book[2],book[3],book[4],book[5]))
+        
         return books
     
     @staticmethod
@@ -117,8 +116,6 @@ class AuthorsDataAdapter:
     @staticmethod
     def get_all()->list:
         authors=[]
-        cn=sqlite3.connect("students.db")
-        cur=cn.cursor()
         auths=cur.execute("SELECT * FROM authors")
 
         for auth in auths:
@@ -130,7 +127,7 @@ class AuthorsDataAdapter:
         cur.execute(sql)
         cn.commit()
         author.id=cur.lastrowid
-        return author
+        return author   
     @staticmethod
     def delete(id:int)->bool:
         if id in cur.execute("SELECT id FROM books"):
@@ -145,8 +142,6 @@ class TranslatorsDataAdapter:
     @staticmethod
     def get_all()->list:
         translators=[]
-        cn=sqlite3.connect("students.db")
-        cur=cn.cursor()
         transls=cur.execute("SELECT * FROM translators")
 
         for transl in transls:
@@ -173,8 +168,6 @@ class PublishersDataAdapter:
     @staticmethod
     def get_all()->list:
         publishers=[]
-        cn=sqlite3.connect("students.db")
-        cur=cn.cursor()
         puplis=cur.execute("SELECT * FROM publishers")
 
         for pupli in puplis:
@@ -201,8 +194,6 @@ class ResourcesDataAdapter:
     @staticmethod
     def get_all()->list:
         resources=[]
-        cn=sqlite3.connect("students.db")
-        cur=cn.cursor()
         resors=cur.execute("SELECT * FROM resources")
 
         for resor in resors:
@@ -229,8 +220,6 @@ class EsrbsDataAdapter:
     @staticmethod
     def get_all()->list:
         esrbs=[]
-        cn=sqlite3.connect("students.db")
-        cur=cn.cursor()
         esrbses=cur.execute("SELECT * FROM esrb_ratings")
 
         for esrbse in esrbses:
@@ -259,8 +248,6 @@ class GenresDataAdapter:
     @staticmethod
     def get_all()->list:
         genres=[]
-        cn=sqlite3.connect("students.db")
-        cur=cn.cursor()
         genres=cur.execute("SELECT * FROM genres")
 
         for genrese in genres:
@@ -287,8 +274,6 @@ class LanguagesDataAdapter:
     @staticmethod
     def get_all()->list:
         Languages=[]
-        cn=sqlite3.connect("students.db")
-        cur=cn.cursor()
         Langs=cur.execute("SELECT * FROM languages")
 
         for Lang in Langs:
@@ -308,6 +293,8 @@ class LanguagesDataAdapter:
             cn.commit()
             return True
         return False
+
+
 
 b1=BooksDataAdapter.get_all()
 print(b1)

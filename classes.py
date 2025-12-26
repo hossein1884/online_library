@@ -22,6 +22,8 @@ class Author:
         self.birthday=birthday 
         self.grade=grade 
     
+    def __eq__(self,other):
+        return self.id==other
 
 class Translator:
     id:int=int()
@@ -32,13 +34,16 @@ class Translator:
     def __str__(self):
         return f"\033[31m id:\033[0m {self.id},\033[31m national_code:\033[0m {self.national_code},\033[31m name:\033[0m {self.name},\033[31m last_name:\033[0m {self.last_name},\033[31m birthday:\033[0m {self.birthday},\033[31m grade:\033[0m {self.grade}"
 
-    def __init__(self,id,national_code,name,last_name,birthday,grade):
+    def __init__(self,id,national_code,name,last_name,grade):
         self.id=id 
         self.national_code=national_code 
         self.name=name 
         self.last_name=last_name 
-        self.birthday=birthday 
+
         self.grade=grade
+
+    def __eq__(self,other):
+        return self.id==other
 
 class Publisher:
     id:int=int()
@@ -60,6 +65,9 @@ class Publisher:
         self.email=email
         self.establish_date=establish_date
 
+    def __eq__(self,other):
+        return self.id==other
+
 class Resource:
     id:int=int()
     title:str=str()
@@ -69,7 +77,7 @@ class Resource:
         return f"\033[31m id:\033[0m {self.id},\033[31m title:\033[0m {self.title},\033[31m type:\033[0m {self.type},\033[31m establish_date:\033[0m {self.establish_date}"
     
     def __eq__(self,other):
-        return self.id==other.id
+        return self.id==other
 
     def __init__(self,id,title,type,establish_date):
         self.id=id
@@ -88,6 +96,9 @@ class Esrb:
         self.id=id
         self.name=name
 
+    def __eq__(self,other):
+        return self.id==other
+
 class Genre:
     id:int=int()
     name:str=str()
@@ -98,6 +109,9 @@ class Genre:
         self.id=id
         self.name=name
 
+    def __eq__(self,other):
+        return self.id==other
+
 class Language:
     id:int=int()
     name:str=str()
@@ -107,6 +121,9 @@ class Language:
     def __init__(self,id,name):
         self.id=id
         self.name=name
+
+    def __eq__(self,other):
+        return self.id==other
 
 class Book:
     id:int=int()
@@ -120,9 +137,21 @@ class Book:
     translators:list[Translator]=list()
     genres:list[Genre]=list()
     languages:list[Language]=list()
+    def __init__(self,id,name,title,description,esrb_rating,publisher,resources,authors,translators,genres,languages):
+        self.id=id
+        self.name=name
+        self.title=title
+        self.description=description
+        self.esrb_rating=esrb_rating
+        self.publisher=publisher
+        self.resources=resources
+        self.authors=authors
+        self.translators=translators
+        self.genres=genres
+        self.languages=languages
 
-
-
+    def __str__(self):
+        return f"id: {self.id},resources: {self.languages},authors: {self.authors},translators: {self.translators},genres: {self.genres},languages: {self.languages}"
 
 
 
@@ -130,20 +159,19 @@ class BooksDataAdapter:
     @staticmethod
     def get_all()->list:
         books=[]
-        boks=cur.execute("SELECT * FROM books")
-        data_nn=cur.execute("SELECT id,name,title,description,esrb_rating_id,publisher_id,author_id,translator_id,resource_id,language_id,genre_id FROM books INNER JOIN book_author ON books.id=book_author.book_id INNER JOIN book_translator ON book_author.book_id=book_translator.book_id INNER JOIN book_resource ON book_translator.book_id=book_resource.book_id INNER JOIN book_language ON book_resource.book_id=book_language.book_id INNER JOIN book_genre ON book_language.book_id=book_genre.book_id;")
+        boks=cur.execute("SELECT * FROM books").fetchall()
+        data_nn=cur.execute("SELECT id,name,title,description,esrb_rating_id,publisher_id,author_id,translator_id,resource_id,language_id,genre_id FROM books INNER JOIN book_author ON books.id=book_author.book_id INNER JOIN book_translator ON book_author.book_id=book_translator.book_id INNER JOIN book_resource ON book_translator.book_id=book_resource.book_id INNER JOIN book_language ON book_resource.book_id=book_language.book_id INNER JOIN book_genre ON book_language.book_id=book_genre.book_id;").fetchall()
         resources=ResourcesDataAdapter.get_all()
         authors=AuthorsDataAdapter.get_all()
         translators=TranslatorsDataAdapter.get_all()
         genres=GenresDataAdapter.get_all()
         languages=LanguagesDataAdapter.get_all()
         for book in boks:
-            
-            res=[resource for id in [dt[8] for dt in data_nn if dt[0]==book[0]] for resource in resources if resource==id]
-            aut=[author for id in [dt[6] for dt in data_nn if dt[0]==book[0]] for author in authors if author==id]
-            tra=[translator for id in [dt[7] for dt in data_nn if dt[0]==book[0]] for translator in translators if translator==id]
-            gen=[genre for id in [dt[10] for dt in data_nn if dt[0]==book[0]] for genre in genres if genre==id]
-            lan=[language for id in [dt[9] for dt in data_nn if dt[0]==book[0]] for language in languages if language==id]
+            res=[resource for id in set([dt[8] for dt in data_nn if dt[0]==book[0]]) for resource in resources if resource==id]
+            aut=[author for id in set([dt[6] for dt in data_nn if dt[0]==book[0]]) for author in authors if author==id]
+            tra=[translator for id in set([dt[7] for dt in data_nn if dt[0]==book[0]]) for translator in translators if translator==id]
+            gen=[genre for id in set([dt[10] for dt in data_nn if dt[0]==book[0]]) for genre in genres if genre==id]
+            lan=[language for id in set([dt[9] for dt in data_nn if dt[0]==book[0]]) for language in languages if language==id]
 
             books.append(Book(book[0],book[1],book[2],book[3],book[4],book[5],res,aut,tra,gen,lan))
         
@@ -174,7 +202,7 @@ class AuthorsDataAdapter:
     @staticmethod
     def get_all()->list:
         authors=[]
-        auths=cur.execute("SELECT * FROM authors")
+        auths=cur.execute("SELECT * FROM authors").fetchall()
 
         for auth in auths:
             authors.append(Author(auth[0],auth[1],auth[2],auth[3],auth[4],auth[5]))
@@ -200,7 +228,7 @@ class TranslatorsDataAdapter:
     @staticmethod
     def get_all()->list:
         translators=[]
-        transls=cur.execute("SELECT * FROM translators")
+        transls=cur.execute("SELECT * FROM translators").fetchall()
 
         for transl in transls:
             translators.append(Translator(transl[0],transl[1],transl[2],transl[3],transl[4]))
@@ -226,7 +254,7 @@ class PublishersDataAdapter:
     @staticmethod
     def get_all()->list:
         publishers=[]
-        puplis=cur.execute("SELECT * FROM publishers")
+        puplis=cur.execute("SELECT * FROM publishers").fetchall()
 
         for pupli in puplis:
             publishers.append(Publisher(pupli[0],pupli[1],pupli[2],pupli[3],pupli[4],pupli[5],pupli[6]))
@@ -252,7 +280,7 @@ class ResourcesDataAdapter:
     @staticmethod
     def get_all()->list:
         resources=[]
-        resors=cur.execute("SELECT * FROM resources")
+        resors=cur.execute("SELECT * FROM resources").fetchall()
 
         for resor in resors:
             resources.append(Resource(resor[0],resor[1],resor[2],resor[3]))
@@ -278,7 +306,7 @@ class EsrbsDataAdapter:
     @staticmethod
     def get_all()->list:
         esrbs=[]
-        esrbses=cur.execute("SELECT * FROM esrb_ratings")
+        esrbses=cur.execute("SELECT * FROM esrb_ratings").fetchall()
 
         for esrbse in esrbses:
             esrbs.append(Esrb(esrbse[0],esrbse[1]))
@@ -306,9 +334,9 @@ class GenresDataAdapter:
     @staticmethod
     def get_all()->list:
         genres=[]
-        genres=cur.execute("SELECT * FROM genres")
+        gen=cur.execute("SELECT * FROM genres").fetchall()
 
-        for genrese in genres:
+        for genrese in gen:
             genres.append(Genre(genrese[0],genrese[1]))
         return genres
     @staticmethod
@@ -332,7 +360,7 @@ class LanguagesDataAdapter:
     @staticmethod
     def get_all()->list:
         Languages=[]
-        Langs=cur.execute("SELECT * FROM languages")
+        Langs=cur.execute("SELECT * FROM languages").fetchall()
 
         for Lang in Langs:
             Languages.append(Language(Lang[0],Lang[1]))
@@ -355,4 +383,6 @@ class LanguagesDataAdapter:
 
 
 b1=BooksDataAdapter.get_all()
-print(b1)
+for book in b1:
+    print(book)
+

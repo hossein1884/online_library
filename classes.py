@@ -14,6 +14,9 @@ class Author:
     def __str__(self):
         return f"\033[31m id:\033[0m {self.id},\033[31m national_code:\033[0m {self.national_code},\033[31m name:\033[0m {self.name},\033[31m last_name:\033[0m {self.last_name},\033[31m birthday:\033[0m {self.birthday},\033[31m grade:\033[0m {self.grade}"
 
+    def __init__(self):
+       pass 
+    
 
 class Translator:
     id:int=int()
@@ -42,6 +45,9 @@ class Resource:
     establish_date:str=str()
     def __str__(self):
         return f"\033[31m id:\033[0m {self.id},\033[31m title:\033[0m {self.title},\033[31m type:\033[0m {self.type},\033[31m establish_date:\033[0m {self.establish_date}"
+    
+    def __eq__(self,other):
+        return self.id==other.id
 
 class Esrb:
     id:int=int()
@@ -73,7 +79,7 @@ class Book:
     translators:list[Translator]=list()
     genres:list[Genre]=list()
     languages:list[Language]=list()
-    
+
 
 
 
@@ -84,9 +90,21 @@ class BooksDataAdapter:
     def get_all()->list:
         books=[]
         boks=cur.execute("SELECT * FROM books")
-
+        data_nn=cur.execute("SELECT id,name,title,description,esrb_rating_id,publisher_id,author_id,translator_id,resource_id,language_id,genre_id FROM books INNER JOIN book_author ON books.id=book_author.book_id INNER JOIN book_translator ON book_author.book_id=book_translator.book_id INNER JOIN book_resource ON book_translator.book_id=book_resource.book_id INNER JOIN book_language ON book_resource.book_id=book_language.book_id INNER JOIN book_genre ON book_language.book_id=book_genre.book_id;")
+        resources=ResourcesDataAdapter.get_all()
+        authors=AuthorsDataAdapter.get_all()
+        translators=TranslatorsDataAdapter.get_all()
+        genres=GenresDataAdapter.get_all()
+        languages=LanguagesDataAdapter.get_all()
         for book in boks:
-            books.append(Book(book[0],book[1],book[2],book[3],book[4],book[5]))
+            
+            res=[resource for id in [dt[8] for dt in data_nn if dt[0]==book[0]] for resource in resources if resource==id]
+            aut=[author for id in [dt[6] for dt in data_nn if dt[0]==book[0]] for author in authors if author==id]
+            tra=[translator for id in [dt[7] for dt in data_nn if dt[0]==book[0]] for translator in translators if translator==id]
+            gen=[genre for id in [dt[10] for dt in data_nn if dt[0]==book[0]] for genre in genres if genre==id]
+            lan=[language for id in [dt[9] for dt in data_nn if dt[0]==book[0]] for language in languages if language==id]
+
+            books.append(Book(book[0],book[1],book[2],book[3],book[4],book[5],res,aut,tra,gen,lan))
         
         return books
     
@@ -108,7 +126,6 @@ class BooksDataAdapter:
             cn.commit()
             return True
         return False
-
 
 
 

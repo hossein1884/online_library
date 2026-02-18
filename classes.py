@@ -396,6 +396,9 @@ class LanguagesDataAdapter:
             cn.commit()
             return True
         return False
+    @staticmethod
+    def search(name:str)->list:
+        return [Language(language[0],language[1]) for language in cur.execute(f"SELECT * FROM languages WHERE languages.name LIKE '{name}%';").fetchall()]
 
 
 

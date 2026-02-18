@@ -160,7 +160,7 @@ class BooksDataAdapter:
     def get_all()->list:
         books=[]
         boks=cur.execute("SELECT * FROM books").fetchall()
-        data_nn=cur.execute("SELECT id,name,title,description,esrb_rating_id,publisher_id,author_id,translator_id,resource_id,language_id,genre_id FROM books INNER JOIN book_author ON books.id=book_author.book_id INNER JOIN book_translator ON book_author.book_id=book_translator.book_id INNER JOIN book_resource ON book_translator.book_id=book_resource.book_id INNER JOIN book_language ON book_resource.book_id=book_language.book_id INNER JOIN book_genre ON book_language.book_id=book_genre.book_id;").fetchall()
+        data_nn=cur.execute("SELECT id,name,title,description,esrb_rating_id,publisher_id,author_id,translator_id,resource_id,language_id,genre_id FROM books LEFT JOIN book_author ON books.id=book_author.book_id LEFT JOIN book_translator ON book_author.book_id=book_translator.book_id LEFT JOIN book_resource ON book_translator.book_id=book_resource.book_id LEFT JOIN book_language ON book_resource.book_id=book_language.book_id LEFT JOIN book_genre ON book_language.book_id=book_genre.book_id;").fetchall()
         resources=ResourcesDataAdapter.get_all()
         authors=AuthorsDataAdapter.get_all()
         translators=TranslatorsDataAdapter.get_all()
@@ -221,7 +221,9 @@ class AuthorsDataAdapter:
             cn.commit()
             return True
         return False
-
+    @staticmethod
+    def search(name:str,family:str)->list:
+        return [Author(auth[0],auth[1],auth[2],auth[3],auth[4],auth[5]) for auth in cur.execute(f"SELECT * FROM authors WHERE authors.name LIKE '{name}%' AND authors.last_name LIKE '{family}%';").fetchall()]
 
 
 class TranslatorsDataAdapter:
@@ -247,6 +249,9 @@ class TranslatorsDataAdapter:
             cn.commit()
             return True
         return False
+    @staticmethod
+    def search(name:str,family:str)->list:
+        return [Translator(trans[0],trans[1],trans[2],trans[3],trans[4]) for trans in cur.execute(f"SELECT * FROM translators WHERE translators.name LIKE '{name}%' AND translators.last_name LIKE '{family}%';").fetchall()]
 
 
 
@@ -273,6 +278,9 @@ class PublishersDataAdapter:
             cn.commit()
             return True
         return False
+    @staticmethod
+    def search(name:str)->list:
+        return [Publisher(publish[0],publish[1],publish[2],publish[3],publish[5],publish[6]) for publish in cur.execute(f"SELECT * FROM publishers WHERE publishers.name LIKE '{name}%';").fetchall()]
 
 
 
@@ -299,6 +307,9 @@ class ResourcesDataAdapter:
             cn.commit()
             return True
         return False
+    @staticmethod
+    def search(title:str)->list:
+        return [Resource(resource[0],resource[1],resource[2],resource[3]) for resource in cur.execute(f"SELECT * FROM resources WHERE resources.name LIKE '{title}%';").fetchall()]
 
 
 
@@ -328,6 +339,9 @@ class EsrbsDataAdapter:
             return True
         return False
 
+    @staticmethod
+    def search(name:str)->list:
+        return [Esrb(esrb[0],esrb[1]) for esrb in cur.execute(f"SELECT * FROM esrb_ratings WHERE esrb_ratings.esrb_name LIKE '{name}%';").fetchall()]
 
 
 class GenresDataAdapter:
@@ -353,6 +367,9 @@ class GenresDataAdapter:
             cn.commit()
             return True
         return False
+    @staticmethod
+    def search(name:str)->list:
+        return [Genre(genre[0],genre[1]) for genre in cur.execute(f"SELECT * FROM genres WHERE genres.name LIKE '{name}%';").fetchall()]
 
 
 
@@ -383,6 +400,8 @@ class LanguagesDataAdapter:
 
 
 b1=BooksDataAdapter.get_all()
-for book in b1:
-    print(book)
+# for book in b1:
+#     print(book)
+t=TranslatorsDataAdapter.get_all()
+print(TranslatorsDataAdapter.search("غلی","یمرب"))
 

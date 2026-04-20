@@ -59,11 +59,13 @@
 from classes import *
 import tkinter as tk
 from tkinter import ttk
+cn = sqlite3.connect("books.db")
+cur=cn.cursor()
 
 def refresh_listbox():
     listbox1.delete(0, tk.END)  
     for genre in GenresDataAdapter.get_all():
-        listbox1.insert("end", f"{genre.id} ,{genre.name}")
+        listbox1.insert("end", f"{genre.id} , {genre.name}")
 
 def genre_insert():
     GenresDataAdapter.insert(Genre(0, entry1.get()))
@@ -81,6 +83,16 @@ def on_select(event):
     entry1.insert(0, value)    
 
 
+def update_genre():
+    
+    values = entry1.get().strip().split(',')
+    genre=Genre(values[0],values[1])
+    GenresDataAdapter.update(genre)
+    
+    
+
+    refresh_listbox() 
+
 window = tk.Tk()
 window.configure(bg="lightblue")
 window.title("my window")
@@ -91,7 +103,7 @@ label1.grid(row=0, column=0, padx=10, pady=10)
 entry1 = tk.Entry(window, bd=6, font=("Arial", 15))
 entry1.grid(row=0, column=1, sticky="ew", padx=10, pady=10)
 
-button1 = tk.Button(window, text="ok", width=8, command=genre_insert)
+button1 = tk.Button(window, text="ok", width=8, command=update_genre)
 button1.grid(row=2, column=0, columnspan=2, pady=20)
 
 listbox1 = tk.Listbox(window, width=40, height=10, font=("Arial", 11))

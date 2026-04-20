@@ -84,7 +84,6 @@ class Resource:
         self.type=type
         self.establish_date=establish_date
 
-
 class Esrb:
     id:int=int()
     name:str=str()
@@ -233,10 +232,6 @@ class BooksDataAdapter:
         return cur.execute(f"{sql} WHERE {where.strip(" AND") if where[:4]==" AND" else where} ").fetchall()
 
 
-
-
-
-
 class AuthorsDataAdapter:
     @staticmethod
     def get_all()->list:
@@ -321,7 +316,6 @@ class PublishersDataAdapter:
         return [Publisher(publish[0],publish[1],publish[2],publish[3],publish[4],publish[5],publish[6]) for publish in cur.execute(f"SELECT * FROM publishers WHERE publishers.name LIKE '{name}%';").fetchall()]
 
 
-
 class ResourcesDataAdapter:
     @staticmethod
     def get_all()->list:
@@ -348,7 +342,6 @@ class ResourcesDataAdapter:
     @staticmethod
     def search(title:str)->list:
         return [Resource(resource[0],resource[1],resource[2],resource[3]) for resource in cur.execute(f"SELECT * FROM resources WHERE resources.name LIKE '{title}%';").fetchall()]
-
 
 
 class EsrbsDataAdapter:

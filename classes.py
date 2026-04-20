@@ -1,8 +1,7 @@
 import sqlite3
-
+import tkinter as tk
 cn = sqlite3.connect("books.db")
 cur=cn.cursor()
-
 
 class Author:
     id:int=int()
@@ -155,6 +154,10 @@ class Book:
 
 
 
+
+
+
+
 class BooksDataAdapter:
     @staticmethod
     def get_all()->list:
@@ -196,8 +199,41 @@ class BooksDataAdapter:
             return True
         return False
     @staticmethod
-    def search(title:str)->list:
-        return [Language(language[0],language[1]) for language in cur.execute(f"SELECT * FROM languages WHERE languages.name LIKE '{name}%';").fetchall()]
+    def search(title:str="",author_name:str="",publisher_name:str="",translator_name:str="",genre_name:str="")->list:
+
+        sql="SELECT * FROM books"
+        where=""
+        if title:
+            where+=f" name LIKE '{title}'"
+        
+        if author_name:
+            # author_id=cur.execute(f"SELECT id FROM authors WHERE name LIKE '{author_name}'").fetchall()[0][0]
+            author_ids=set(author.id for author in AuthorsDataAdapter.search(author_name))
+            where+=f" AND author_id IN '{author_ids}'"
+            sql+=f" LEFT JOIN book_author ON books.id=book_author.book_id"
+        
+        if publisher_name:
+            # publisher_id=cur.execute(f"SELECT id FROM publishers WHERE name LIKE '{publisher_name}'").fetchall()[0][0]
+            publisher_ids=set(publisher.id for publisher in PublishersDataAdapter.search(f"{publisher_name}"))
+            where+=f" AND publisher_id IN '{publisher_ids}'"
+            
+        
+        if translator_name:
+            # translator_id=cur.execute(f"SELECT id FROM translators WHERE name LIKE '{translator_id}'").fetchall()[0][0]
+            translator_ids=set(translator.id for translator in TranslatorsDataAdapter.search(f"{translator_name}"))
+            where+=f" AND translator_id IN '{translator_ids}'"
+            sql+=" LEFT JOIN book_translator ON books.id=book_translator.book_id"
+
+        if genre_name:
+            # genre_id=cur.execute(f"SELECT id FROM genres WHERE name LIKE '{genre_name}'").fetchall()[0][0]
+            genre_ids=set(genre.id for genre in GenresDataAdapter.search(f"{genre_name}") )
+            where+=f" AND genre_id LIKE '{genre_ids}'"
+            sql+=" LEFT JOIN book_genre ON books.id=book_genre.book_id"
+        
+        return cur.execute(f"{sql} WHERE {where.strip(" AND") if where[:4]==" AND" else where} ").fetchall()
+
+
+
 
 
 
@@ -257,7 +293,6 @@ class TranslatorsDataAdapter:
         return [Translator(trans[0],trans[1],trans[2],trans[3],trans[4]) for trans in cur.execute(f"SELECT * FROM translators WHERE translators.name LIKE '{name}%' AND translators.last_name LIKE '{family}%';").fetchall()]
 
 
-
 class PublishersDataAdapter:
     @staticmethod
     def get_all()->list:
@@ -283,7 +318,7 @@ class PublishersDataAdapter:
         return False
     @staticmethod
     def search(name:str)->list:
-        return [Publisher(publish[0],publish[1],publish[2],publish[3],publish[5],publish[6]) for publish in cur.execute(f"SELECT * FROM publishers WHERE publishers.name LIKE '{name}%';").fetchall()]
+        return [Publisher(publish[0],publish[1],publish[2],publish[3],publish[4],publish[5],publish[6]) for publish in cur.execute(f"SELECT * FROM publishers WHERE publishers.name LIKE '{name}%';").fetchall()]
 
 
 
@@ -405,9 +440,9 @@ class LanguagesDataAdapter:
 
 
 
-b1=BooksDataAdapter.get_all()
-# for book in b1:
-#     print(book)
-t=TranslatorsDataAdapter.get_all()
-print(TranslatorsDataAdapter.search("غلی","یمرب"))
+
+
+
+
+
 

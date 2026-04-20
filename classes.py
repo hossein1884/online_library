@@ -408,7 +408,10 @@ class GenresDataAdapter:
     @staticmethod
     def search(name:str)->list:
         return [Genre(genre[0],genre[1]) for genre in cur.execute(f"SELECT * FROM genres WHERE genres.name LIKE '{name}%';").fetchall()]
-
+    @staticmethod
+    def update(genre:Genre)->None:
+        cur.execute(f"UPDATE genres set name='{genre.name}' WHERE id={int(genre.id)};")
+        cn.commit()
 
 
 class LanguagesDataAdapter:

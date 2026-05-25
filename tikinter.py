@@ -1,67 +1,10 @@
-# from classes import *
-# import tkinter as tk
-# from tkinter import ttk
-
-# def genre_insert():
-#     GenresDataAdapter.insert(Genre(0, entry1.get()))
-
-# window = tk.Tk()
-# window.configure(bg="lightblue")
-# window.title("my window")
-
-
-# # Label
-# label1 = tk.Label(window, text="enter genre name:", fg="black", bg="lightblue", font=("Arial", 18))
-# label1.grid(row=0, column=0)
-
-# # Entry
-# entry1 = tk.Entry(window, bd=6, font=("Arial", 15))
-# entry1.grid(row=0, column=1, sticky="ew", padx=10, pady=10)
-
-# # Button
-# button1 = tk.Button(window, text="ok", width=8, command=genre_insert)
-# button1.grid(row=2, column=0, columnspan=2, pady=20)
-
-# listbox1 = tk.Listbox(window)
-# listbox1.grid(row=1, column=0)
-# genres=""
-# for genre in GenresDataAdapter.get_all():
-#     genres+=str(genre)+"\n"
-
-# listbox1.insert("end",genre)
-
-# # listbox1.insert(f"{GenresDataAdapter.get_all()}")
-
-# window.grid_columnconfigure(0, weight=0)
-# window.grid_columnconfigure(1, weight=1)
-# window.grid_rowconfigure(0, weight=1)
-
-# window.mainloop()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 from classes import *
 import tkinter as tk
 from tkinter import ttk
 cn = sqlite3.connect("books.db")
 cur=cn.cursor()
-
+select_id=0
 def refresh_listbox():
     listbox1.delete(0, tk.END)  
     for genre in GenresDataAdapter.get_all():
@@ -73,20 +16,21 @@ def genre_insert():
     refresh_listbox() 
 
 def on_select(event):
+    global select_id
     if not listbox1.curselection():
         return
 
     index = listbox1.curselection()[0]
-    value = listbox1.get(index)
-
+    value = listbox1.get(index).strip().split(",")
+    select_id=select_id*0
+    select_id+= int(value[0])
     entry1.delete(0, tk.END)   
-    entry1.insert(0, value)    
+    entry1.insert(0, value[1])    
 
 
 def update_genre():
     
-    values = entry1.get().strip().split(',')
-    genre=Genre(values[0],values[1])
+    genre=Genre(select_id, entry1.get())
     GenresDataAdapter.update(genre)
     
     

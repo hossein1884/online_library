@@ -155,8 +155,6 @@ class Book:
 
 
 
-
-
 class BooksDataAdapter:
     @staticmethod
     def get_all()->list:

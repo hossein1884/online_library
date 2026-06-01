@@ -1,3 +1,5 @@
+from models.esrb import Esrb
+
 class EsrbsDataAdapter:
     @staticmethod
     def get_all()->list:

@@ -1,3 +1,5 @@
+from models.publisher import Publisher
+
 class PublishersDataAdapter:
     @staticmethod
     def get_all()->list:

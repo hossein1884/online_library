@@ -1,3 +1,5 @@
+from models.genre import Genre
+
 class GenresDataAdapter:
     @staticmethod
     def get_all()->list:

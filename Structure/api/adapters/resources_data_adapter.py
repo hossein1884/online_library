@@ -1,3 +1,5 @@
+from models.resource import Resource
+
 class ResourcesDataAdapter:
     @staticmethod
     def get_all()->list:

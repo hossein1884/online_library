@@ -1,3 +1,5 @@
+from models.language import Language
+
 class LanguagesDataAdapter:
     @staticmethod
     def get_all()->list:

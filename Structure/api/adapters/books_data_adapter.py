@@ -1,3 +1,12 @@
+from models.book import Book
+from adapters.authors_data_adapter import AuthorsDataAdapter
+from adapters.resources_data_adapter import ResourcesDataAdapter
+from adapters.translators_data_adapter import TranslatorsDataAdapter
+from adapters.languages_data_adapter import LanguagesDataAdapter
+from adapters.genres_data_adapter import GenresDataAdapter
+
+
+
 class BooksDataAdapter:
     @staticmethod
     def get_all()->list:

@@ -1,3 +1,5 @@
+from models.author import Author
+
 class AuthorsDataAdapter:
     @staticmethod
     def get_all()->list:

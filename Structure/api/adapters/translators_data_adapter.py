@@ -1,3 +1,5 @@
+from models.translator import Publisher
+
 class TranslatorsDataAdapter:
     @staticmethod
     def get_all()->list:

@@ -1,4 +1,4 @@
-from models.language import Language
+from api.models.language import Language
 
 class LanguagesDataAdapter:
     @staticmethod

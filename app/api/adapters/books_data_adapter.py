@@ -1,9 +1,9 @@
-from models.book import Book
-from adapters.authors_data_adapter import AuthorsDataAdapter
-from adapters.resources_data_adapter import ResourcesDataAdapter
-from adapters.translators_data_adapter import TranslatorsDataAdapter
-from adapters.languages_data_adapter import LanguagesDataAdapter
-from adapters.genres_data_adapter import GenresDataAdapter
+from api.models.book import Book
+from .authors_data_adapter import AuthorsDataAdapter
+from .resources_data_adapter import ResourcesDataAdapter
+from .translators_data_adapter import TranslatorsDataAdapter
+from .languages_data_adapter import LanguagesDataAdapter
+from .genres_data_adapter import GenresDataAdapter
 
 
 

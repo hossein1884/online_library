@@ -1,4 +1,4 @@
-from models.translator import Publisher
+from api.models.translator import Publisher
 
 class TranslatorsDataAdapter:
     @staticmethod

@@ -1,3 +1,12 @@
+from .esrb import Esrb
+from .author import Author
+from .publisher import Publisher
+from .resource import Resource
+from .translator import Translator
+from .genre import Genre
+from .language import Language
+
+
 class Book:
     id:int=int()
     name:str=str()
@@ -25,3 +34,4 @@ class Book:
 
     def __str__(self):
         return f"id: {self.id},resources: {self.languages},authors: {self.authors},translators: {self.translators},genres: {self.genres},languages: {self.languages}"
+    

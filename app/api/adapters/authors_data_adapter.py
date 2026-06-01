@@ -1,4 +1,4 @@
-from models.author import Author
+from api.models.author import Author
 
 class AuthorsDataAdapter:
     @staticmethod

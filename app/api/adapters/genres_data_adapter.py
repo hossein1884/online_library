@@ -1,4 +1,4 @@
-from models.genre import Genre
+from api.models.genre import Genre
 
 class GenresDataAdapter:
     @staticmethod

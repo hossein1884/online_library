@@ -1,4 +1,4 @@
-from api.models.book import Book
+from app.api.models.book import Book
 from .authors_data_adapter import AuthorsDataAdapter
 from .resources_data_adapter import ResourcesDataAdapter
 from .translators_data_adapter import TranslatorsDataAdapter

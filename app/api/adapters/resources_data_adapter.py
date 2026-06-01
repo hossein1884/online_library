@@ -1,4 +1,4 @@
-from api.models.resource import Resource
+from app.api.models.resource import Resource
 
 class ResourcesDataAdapter:
     @staticmethod

@@ -1,4 +1,4 @@
-from api.models.publisher import Publisher
+from app.api.models.publisher import Publisher
 
 class PublishersDataAdapter:
     @staticmethod

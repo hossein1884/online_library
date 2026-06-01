@@ -1,4 +1,4 @@
-from api.models.esrb import Esrb
+from app.api.models.esrb import Esrb
 
 class EsrbsDataAdapter:
     @staticmethod

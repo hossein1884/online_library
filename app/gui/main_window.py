@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import (
 
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import Qt, QSize
-
+from app.gui.components.esrb_list import EsrbsListWidget
 
 class MainWindow(QMainWindow):
 
@@ -19,49 +19,11 @@ class MainWindow(QMainWindow):
         self.resize(1200, 700)
 
         # =========================================================
-        # Global Modern Theme (VSCode‑like)
+        # Choose Theme
         # =========================================================
 
-        self.setStyleSheet("""
-
-        QMainWindow{
-            background:#1e1e1e;
-        }
-
-        /* Menu bar */
-
-        QMenuBar{
-            background:#252526;
-            color:#d4d4d4;
-            border-bottom:1px solid #3c3c3c;
-        }
-
-        QMenuBar::item{
-            padding:6px 12px;
-        }
-
-        QMenuBar::item:selected{
-            background:#3c3c3c;
-        }
-
-        QMenu{
-            background:#252526;
-            color:#d4d4d4;
-            border:1px solid #3c3c3c;
-        }
-
-        QMenu::item:selected{
-            background:#094771;
-        }
-
-        QPushButton{
-            border:none;
-            color:#d4d4d4;
-            font-size:13px;
-        }
-
-        """)
-
+        
+        
         # =========================================================
         # Central Widget
         # =========================================================
@@ -93,9 +55,15 @@ class MainWindow(QMainWindow):
             rent_menu.addAction(QAction(i,self))
 
         settings_menu = self.menu_bar.addMenu("Settings")
-        for i in ["Home","Options","Appearance"]:
+        for i in ["Home","Options"]:
             settings_menu.addAction(QAction(i,self))
+        # appearance_menu = settings_menu.addMenu("Appearance")
 
+        # dark_action = appearance_menu.addAction("Dark Theme")
+        # light_action = appearance_menu.addAction("Light Theme")
+
+        # dark_action.triggered.connect(self.apply_dark_theme)
+        # light_action.triggered.connect(self.apply_light_theme)
         help_menu = self.menu_bar.addMenu("Help")
         for i in ["Guide","About","Exit"]:
             help_menu.addAction(QAction(i,self))
@@ -272,27 +240,30 @@ class MainWindow(QMainWindow):
         self.side_layout.addWidget(title)
 
         # dummy items
-        for i in range(1,6):
+        # for i in range(1,6):
 
-            btn = QPushButton(f"{section} item {i}")
+        #     btn = QPushButton(f"{section} item {i}")
 
-            btn.setStyleSheet("""
-            QPushButton{
-                background:#2d2d2d;
-                border:1px solid #3c3c3c;
-                padding:6px;
-                text-align:left;
-                border-radius:4px;
-            }
+        #     btn.setStyleSheet("""
+        #     QPushButton{
+        #         background:#2d2d2d;
+        #         border:1px solid #3c3c3c;
+        #         padding:6px;
+        #         text-align:left;
+        #         border-radius:4px;
+        #     }
 
-            QPushButton:hover{
-                background:#094771;
-            }
-            """)
+        #     QPushButton:hover{
+        #         background:#094771;
+        #     }
+        #     """)
 
-            btn.clicked.connect(lambda _,t=section:self.change_content(t))
+        #     btn.clicked.connect(lambda _,t=section:self.change_content(t))
 
-            self.side_layout.addWidget(btn)
+        #     self.side_layout.addWidget(btn)
+        if section == "esrb":
+            widget = EsrbsListWidget()
+            self.side_layout.addWidget(widget)
 
         self.side_layout.addStretch()
 
@@ -304,6 +275,145 @@ class MainWindow(QMainWindow):
 
         self.content_label.setText(f"{text.capitalize()} View")
 
+    # =========================================================
+    # Themes
+    # =========================================================
+
+    def apply_light_theme(self):
+
+        self.setStyleSheet("""
+
+        QMainWindow{
+            background:#f5f6f8;
+        }
+
+        /* ===== Menu Bar ===== */
+
+        QMenuBar{
+            background:#ffffff;
+            color:#222;
+            border-bottom:1px solid #dcdcdc;
+        }
+
+        QMenuBar::item{
+            padding:6px 12px;
+            background:transparent;
+        }
+
+        QMenuBar::item:selected{
+            background:#e8f0fe;
+        }
+
+        QMenu{
+            background:#ffffff;
+            color:#222;
+            border:1px solid #dcdcdc;
+        }
+
+        QMenu::item:selected{
+            background:#e8f0fe;
+        }
+
+        /* ===== Activity Bar ===== */
+
+        #activityBar{
+            background:#f3f3f3;
+            border-right:1px solid #dcdcdc;
+        }
+
+        QPushButton{
+            border:none;
+            padding:8px;
+        }
+
+        QPushButton:hover{
+            background:#e6e6e6;
+        }
+
+        /* ===== Side Panel ===== */
+
+        #sidePanel{
+            background:#ffffff;
+            border-right:1px solid #dcdcdc;
+        }
+
+        /* ===== Content Panel ===== */
+
+        #contentPanel{
+            background:#fafafa;
+        }
+
+        QLabel{
+            color:#222;
+        }
+
+        QListWidget{
+            background:transparent;
+            border:none;
+            color:#333;
+        }
+
+        QListWidget::item{
+            padding:8px;
+            border-radius:4px;
+        }
+
+        QListWidget::item:hover{
+            background:#e8f0fe;
+        }
+
+        QListWidget::item:selected{
+            background:#c2dbff;
+        }
+
+        """)
+
+    def apply_dark_theme(self):
+
+        self.setStyleSheet("""
+
+        QMainWindow{
+            background:#1e1e1e;
+        }
+
+        QMenuBar{
+            background:#2d2d2d;
+            color:#ffffff;
+            border-bottom:1px solid #3c3c3c;
+        }
+
+        QMenuBar::item:selected{
+            background:#094771;
+        }
+
+        QMenu{
+            background:#2d2d2d;
+            color:#ffffff;
+            border:1px solid #3c3c3c;
+        }
+
+        QMenu::item:selected{
+            background:#094771;
+        }
+
+        #activityBar{
+            background:#333333;
+        }
+
+        #sidePanel{
+            background:#252526;
+            border-right:1px solid #3c3c3c;
+        }
+
+        #contentPanel{
+            background:#1e1e1e;
+        }
+
+        QLabel{
+            color:#d4d4d4;
+        }
+
+        """)
 
 # =========================================================
 # Application Start

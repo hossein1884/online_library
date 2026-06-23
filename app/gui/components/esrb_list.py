@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel
 from PyQt6.QtCore import Qt
 
-from app.api.adapters.esrbs_data_adapter import EsrbDataAdapter
+from app.api.adapters.esrbs_data_adapter import EsrbsDataAdapter
 
 
 class EsrbsListWidget(QWidget):

@@ -1,5 +1,5 @@
 from app.api.models.author import Author
-
+from app.database.db_manager import cn, cur
 class AuthorsDataAdapter:
     @staticmethod
     def get_all()->list:

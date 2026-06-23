@@ -1,5 +1,5 @@
 from app.api.models.language import Language
-
+from app.database.db_manager import cn, cur
 class LanguagesDataAdapter:
     @staticmethod
     def get_all()->list:

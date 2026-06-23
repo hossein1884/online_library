@@ -4,7 +4,7 @@ from .resources_data_adapter import ResourcesDataAdapter
 from .translators_data_adapter import TranslatorsDataAdapter
 from .languages_data_adapter import LanguagesDataAdapter
 from .genres_data_adapter import GenresDataAdapter
-
+from app.database.db_manager import cn, cur
 
 
 class BooksDataAdapter:

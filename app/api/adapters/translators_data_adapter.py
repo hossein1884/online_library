@@ -1,5 +1,5 @@
 from app.api.models.translator import Publisher
-
+from app.database.db_manager import cn, cur
 class TranslatorsDataAdapter:
     @staticmethod
     def get_all()->list:

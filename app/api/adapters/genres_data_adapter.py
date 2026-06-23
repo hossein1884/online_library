@@ -1,5 +1,5 @@
 from app.api.models.genre import Genre
-
+from app.database.db_manager import cn, cur
 class GenresDataAdapter:
     @staticmethod
     def get_all()->list:

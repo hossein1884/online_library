@@ -1,5 +1,5 @@
 from app.api.models.resource import Resource
-
+from app.database.db_manager import cn, cur
 class ResourcesDataAdapter:
     @staticmethod
     def get_all()->list:

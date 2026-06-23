@@ -1,5 +1,5 @@
 from app.api.models.publisher import Publisher
-
+from app.database.db_manager import cn, cur
 class PublishersDataAdapter:
     @staticmethod
     def get_all()->list:

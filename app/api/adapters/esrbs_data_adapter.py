@@ -1,4 +1,5 @@
 from app.api.models.esrb import Esrb
+from app.database.db_manager import cn, cur
 
 class EsrbsDataAdapter:
     @staticmethod

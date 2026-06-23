@@ -1,164 +1,319 @@
 import sys
-from PyQt5.QtWidgets import (
+import os
+
+from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QAction, QPushButton, QLineEdit, QMenu
+    QLabel, QPushButton, QSizePolicy, QScrollArea, QMenuBar
 )
-from PyQt5.QtCore import Qt
+
+from PyQt6.QtGui import QAction, QIcon
+from PyQt6.QtCore import Qt, QSize
 
 
 class MainWindow(QMainWindow):
+
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("PyQt5 Layout Task")
-        self.resize(1000, 600)
+        self.setWindowTitle("Library Manager")
+        self.resize(1200, 700)
 
-        # -----------------------------
-        # Menu bar
-        # -----------------------------
-        menubar = self.menuBar()
+        # =========================================================
+        # Global Modern Theme (VSCode‑like)
+        # =========================================================
 
-        books_menu = menubar.addMenu("Books")
-        for i in ["add view","serach","add","edit","delete"]:
-            books_menu.addAction(i)
+        self.setStyleSheet("""
 
-        data_menu = menubar.addMenu("Data")
-        for i in ["author","esrb","genre","language","publisher","resource","translator"]:
-            data_menu.addAction(i)
+        QMainWindow{
+            background:#1e1e1e;
+        }
 
-        rent_menu = menubar.addMenu("Rent")
-        for i in ["issue book","return book","all rental","over due","new"]:
-            rent_menu.addAction(i)
+        /* Menu bar */
 
-        setting_menu = menubar.addMenu("Setting")
-        for i in [""]:
-            setting_menu.addAction(i)
+        QMenuBar{
+            background:#252526;
+            color:#d4d4d4;
+            border-bottom:1px solid #3c3c3c;
+        }
 
-        help_menu = menubar.addMenu("Help")
-        for i in ["guide","exit"]:
-            help_menu.addAction(i)
+        QMenuBar::item{
+            padding:6px 12px;
+        }
 
+        QMenuBar::item:selected{
+            background:#3c3c3c;
+        }
 
-        # -----------------------------
-        # Central widget
-        # -----------------------------
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
+        QMenu{
+            background:#252526;
+            color:#d4d4d4;
+            border:1px solid #3c3c3c;
+        }
 
-        main_layout = QHBoxLayout(central_widget)
-        main_layout.setContentsMargins(0, 0, 0, 0)
+        QMenu::item:selected{
+            background:#094771;
+        }
+
+        QPushButton{
+            border:none;
+            color:#d4d4d4;
+            font-size:13px;
+        }
+
+        """)
+
+        # =========================================================
+        # Central Widget
+        # =========================================================
+
+        central = QWidget()
+        self.setCentralWidget(central)
+
+        main_layout = QVBoxLayout(central)
+        main_layout.setContentsMargins(0,0,0,0)
         main_layout.setSpacing(0)
 
         # =========================================================
-        # 1) Left narrow white strip
+        # Menu Bar
         # =========================================================
-        self.left_bar = QWidget()
-        self.left_bar.setFixedWidth(65)
-        self.left_bar.setStyleSheet("background-color: white;")
 
-        left_bar_layout = QVBoxLayout(self.left_bar)
-        left_bar_layout.setContentsMargins(5, 10, 5, 10)
-        left_bar_layout.setSpacing(6)
-        left_bar_layout.setAlignment(Qt.AlignTop)
-        for i in ["A","B","C"]:
-            left_bar_btn=QPushButton(i)
-            left_bar_btn.setFixedSize(50, 32)
-            left_bar_btn.setStyleSheet("""
-            QPushButton {
-                border: 1px solid #444;
-                background-color: #f5f5f5;
-                font-size: 12px;
-            }
+        self.menu_bar = QMenuBar()
+        main_layout.addWidget(self.menu_bar)
+
+        books_menu = self.menu_bar.addMenu("Books")
+        for i in ["View All","Add","Edit","Delete","Search"]:
+            books_menu.addAction(QAction(i,self))
+
+        data_menu = self.menu_bar.addMenu("Data")
+        for i in ["Author","Genre","Language","Publisher","Translator","Resource","Esrb"]:
+            data_menu.addAction(QAction(i,self))
+
+        rent_menu = self.menu_bar.addMenu("Rent")
+        for i in ["Issue Book","Return Book","All Rentals","Overdue"]:
+            rent_menu.addAction(QAction(i,self))
+
+        settings_menu = self.menu_bar.addMenu("Settings")
+        for i in ["Home","Options","Appearance"]:
+            settings_menu.addAction(QAction(i,self))
+
+        help_menu = self.menu_bar.addMenu("Help")
+        for i in ["Guide","About","Exit"]:
+            help_menu.addAction(QAction(i,self))
+
+        # =========================================================
+        # Panels Container
+        # =========================================================
+
+        panels = QWidget()
+        panels_layout = QHBoxLayout(panels)
+
+        panels_layout.setContentsMargins(0,0,0,0)
+        panels_layout.setSpacing(0)
+
+        main_layout.addWidget(panels)
+
+        # =========================================================
+        # Panel 1 — Activity Bar
+        # =========================================================
+
+        self.activity_bar = QWidget()
+        self.activity_bar.setFixedWidth(60)
+
+        self.activity_bar.setStyleSheet("""
+        background:#333333;
+        border-right:1px solid #3c3c3c;
         """)
-            left_bar_layout.addWidget(left_bar_btn)
 
-        # =========================================================
-        # 2) Middle light blue panel
-        # =========================================================
-        self.middle_panel = QWidget()
-        self.middle_panel.setFixedWidth(200)
-        self.middle_panel.setStyleSheet("background-color: #B8D7EA;")
+        activity_layout = QVBoxLayout(self.activity_bar)
+        activity_layout.setContentsMargins(0,10,0,10)
+        activity_layout.setSpacing(6)
 
-        middle_layout = QVBoxLayout(self.middle_panel)
-        middle_layout.setContentsMargins(20, 35, 20, 20)
-        middle_layout.setSpacing(12)
-        middle_layout.setAlignment(Qt.AlignTop)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
-        self.btn_books = QPushButton("Books")
-        self.btn_authors = QPushButton("Authors")
+        scroll_content = QWidget()
+        scroll_layout = QVBoxLayout(scroll_content)
+        scroll_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        for btn in (self.btn_books, self.btn_authors):
-            btn.setFixedHeight(30)
+        # Sidebar buttons definition
+        sidebar_buttons = [
+            ("book","Books"),
+            ("author","Authors"),
+            ("translator","Translators"),
+            ("language","Languages"),
+            ("publisher","Publishers"),
+            ("genre","Genres"),
+            ("resource","Resources"),
+            ("esrb","ESRB")
+        ]
+
+        self.sidebar_buttons = {}
+
+        for btn_id, tooltip in sidebar_buttons:
+
+            container = QWidget()
+            container_layout = QHBoxLayout(container)
+            container_layout.setContentsMargins(0,0,0,0)
+            container_layout.setSpacing(0)
+
+            # indicator
+            indicator = QWidget()
+            indicator.setFixedWidth(4)
+            indicator.setStyleSheet("background:transparent;")
+
+            btn = QPushButton(btn_id[:2].upper())
+            btn.setMinimumHeight(42)
+
             btn.setStyleSheet("""
-                QPushButton {
-                    background-color: #D7E7F2;
-                    border: 1px solid #4A6572;
-                    font-size: 12px;
-                }
-                QPushButton:hover {
-                    background-color: #C9DDEA;
-                }
+            QPushButton{
+                background:transparent;
+                font-weight:bold;
+            }
+
+            QPushButton:hover{
+                background:#3c3c3c;
+            }
             """)
 
-        middle_layout.addWidget(self.btn_books)
-        middle_layout.addWidget(self.btn_authors)
+            btn.clicked.connect(lambda checked,b=btn_id:self.on_sidebar_clicked(b))
+
+            container_layout.addWidget(indicator)
+            container_layout.addWidget(btn)
+
+            self.sidebar_buttons[btn_id] = indicator
+
+            scroll_layout.addWidget(container)
+
+        scroll_layout.addStretch()
+
+        scroll.setWidget(scroll_content)
+
+        activity_layout.addWidget(scroll)
 
         # =========================================================
-        # 3) Right pink panel with form
+        # Panel 2 — Sidebar List
         # =========================================================
-        self.right_panel = QWidget()
-        self.right_panel.setStyleSheet("background-color: #F6C4BC;")
 
-        right_layout = QVBoxLayout(self.right_panel)
-        right_layout.setContentsMargins(120, 80, 120, 20)
-        right_layout.setSpacing(14)
-        right_layout.setAlignment(Qt.AlignTop)
+        self.side_panel = QWidget()
+        self.side_panel.setFixedWidth(260)
 
-        # Title row
-        title_row = QHBoxLayout()
-        lbl_title = QLabel("Title:")
-        edit_title = QLineEdit()
-        edit_title.setFixedHeight(28)
-
-        lbl_title.setFixedWidth(75)
-        title_row.addWidget(lbl_title)
-        title_row.addWidget(edit_title)
-
-        # Publisher row
-        publisher_row = QHBoxLayout()
-        lbl_publisher = QLabel("Publisher:")
-        edit_publisher = QLineEdit()
-        edit_publisher.setFixedHeight(28)
-
-        lbl_publisher.setFixedWidth(75)
-        publisher_row.addWidget(lbl_publisher)
-        publisher_row.addWidget(edit_publisher)
-
-        # OK button
-        btn_ok = QPushButton("OK")
-        btn_ok.setFixedSize(90, 28)
-        btn_ok.setStyleSheet("""
-            QPushButton {
-                background-color: #E8D2D0;
-                border: 1px solid #7A5A5A;
-                font-size: 12px;
-            }
+        self.side_panel.setStyleSheet("""
+        background:#252526;
+        border-right:1px solid #3c3c3c;
         """)
 
-        right_layout.addLayout(title_row)
-        right_layout.addLayout(publisher_row)
-        right_layout.addWidget(btn_ok, alignment=Qt.AlignLeft)
+        self.side_layout = QVBoxLayout(self.side_panel)
+        self.side_layout.setContentsMargins(10,10,10,10)
 
-        # -----------------------------
-        # Add panels to main layout
-        # -----------------------------
-        main_layout.addWidget(self.left_bar)
-        main_layout.addWidget(self.middle_panel)
-        main_layout.addWidget(self.right_panel, stretch=1)
+        label = QLabel("Select a section")
+        label.setStyleSheet("color:#9da5b4;font-size:14px")
 
+        self.side_layout.addWidget(label)
+
+        # =========================================================
+        # Panel 3 — Content Area
+        # =========================================================
+
+        self.content_panel = QWidget()
+        self.content_panel.setStyleSheet("""
+        background:#1e1e1e;
+        """)
+
+        content_layout = QVBoxLayout(self.content_panel)
+
+        self.content_label = QLabel("Content Area")
+        self.content_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.content_label.setStyleSheet("""
+        font-size:22px;
+        color:#cccccc;
+        """)
+
+        content_layout.addWidget(self.content_label)
+
+        # =========================================================
+        # Add Panels
+        # =========================================================
+
+        panels_layout.addWidget(self.activity_bar)
+        panels_layout.addWidget(self.side_panel)
+        panels_layout.addWidget(self.content_panel, stretch=1)
+
+    # =========================================================
+    # Sidebar Click Logic
+    # =========================================================
+
+    def on_sidebar_clicked(self, section):
+
+        # reset indicators
+        for ind in self.sidebar_buttons.values():
+            ind.setStyleSheet("background:transparent;")
+
+        # activate indicator
+        self.sidebar_buttons[section].setStyleSheet("background:#007acc;")
+
+        # clear side panel
+        while self.side_layout.count():
+            item = self.side_layout.takeAt(0)
+            w = item.widget()
+            if w:
+                w.deleteLater()
+
+        # title
+        title = QLabel(section.capitalize())
+        title.setStyleSheet("""
+        font-size:16px;
+        color:#ffffff;
+        font-weight:bold;
+        padding-bottom:6px;
+        """)
+
+        self.side_layout.addWidget(title)
+
+        # dummy items
+        for i in range(1,6):
+
+            btn = QPushButton(f"{section} item {i}")
+
+            btn.setStyleSheet("""
+            QPushButton{
+                background:#2d2d2d;
+                border:1px solid #3c3c3c;
+                padding:6px;
+                text-align:left;
+                border-radius:4px;
+            }
+
+            QPushButton:hover{
+                background:#094771;
+            }
+            """)
+
+            btn.clicked.connect(lambda _,t=section:self.change_content(t))
+
+            self.side_layout.addWidget(btn)
+
+        self.side_layout.addStretch()
+
+    # =========================================================
+    # Content Change
+    # =========================================================
+
+    def change_content(self, text):
+
+        self.content_label.setText(f"{text.capitalize()} View")
+
+
+# =========================================================
+# Application Start
+# =========================================================
 
 if __name__ == "__main__":
+
     app = QApplication(sys.argv)
+
     window = MainWindow()
     window.show()
-    sys.exit(app.exec_())
+
+    sys.exit(app.exec())

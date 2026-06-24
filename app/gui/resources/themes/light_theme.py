@@ -1,201 +1,121 @@
-LIGHT_THEME = """
-/* ==========================================================================
-   Global
-   ========================================================================== */
+LIGHT_THEME = """/*
+    NEW MODERN LIGHT THEME
+    Focus: High Contrast, Clean Lists, No Inversion issues
+*/
 
-QMainWindow {
-    background-color: #ffffff;
-    color: #202124;
-}
-
-#centralWidget {
-    background-color: #ffffff;
-    color: #202124;
-}
-
+/* تنظیمات پایه برای کل اپلیکیشن */
 QWidget {
-    font-family: "Segoe UI";
-    font-size: 10pt;
+    background-color: #FFFFFF;
     color: #202124;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 13px;
 }
 
-
-/* ==========================================================================
-   Menu Bar
-   ========================================================================== */
-
-#mainMenuBar {
-    background-color: #ffffff;
-    color: #202124;
-    border-bottom: 1px solid #dcdcdc;
+/* منوبار بالا */
+QMenuBar {
+    background-color: #F8F9FA;
+    border-bottom: 1px solid #E0E0E0;
+    padding: 2px;
 }
-
-#mainMenuBar::item {
+QMenuBar::item {
     background-color: transparent;
-    color: #202124;
-    padding: 6px 14px;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+QMenuBar::item:selected {
+    background-color: #E8F0FE; /* آبی بسیار ملایم گوگل */
 }
 
-#mainMenuBar::item:selected {
-    background-color: #eeeeee;
-}
-
-#mainMenuBar::item:pressed {
-    background-color: #e0e0e0;
-}
-
-QMenu {
-    background-color: #ffffff;
-    color: #202124;
-    border: 1px solid #dcdcdc;
-    padding: 4px;
-}
-
-QMenu::item {
-    padding: 7px 28px 7px 24px;
-    background-color: transparent;
-    color: #202124;
-}
-
-QMenu::item:selected {
-    background-color: #e8f0fe;
-    color: #174ea6;
-}
-
-QMenu::separator {
-    height: 1px;
-    background-color: #dcdcdc;
-    margin: 4px 8px;
-}
-
-
-/* ==========================================================================
-   Activity Bar
-   ========================================================================== */
-
+/* نوار ابزار سمت چپ (Activity Bar) */
 #activityBar {
-    background-color: #f1f1f1;
-    border-right: 1px solid #d0d0d0;
+    background-color: #F1F3F4;
+    border-right: 1px solid #DADCE0;
 }
-
-#activityButtonContainer {
-    background-color: transparent;
-    border: none;
-}
-
-#activityButtonContainer[active="true"] {
-    background-color: transparent;
-}
-
-#activityIndicator {
-    background-color: transparent;
-    border: none;
-}
-
-#activityIndicator[active="true"] {
-    background-color: #1a73e8;
-    border-radius: 1px;
-}
-
 #activityButton {
     background-color: transparent;
     border: none;
-    border-radius: 4px;
-    padding: 0px;
+    border-radius: 5px;
+    margin: 4px;
 }
-
 #activityButton:hover {
-    background-color: #e0e0e0;
+    background-color: #E8EAED;
 }
-
 #activityButton[active="true"] {
-    background-color: #dcdcdc;
+    background-color: #FFFFFF;
+}
+#activityIndicator[active="true"] {
+    background-color: #1A73E8; /* آبی اصلی برند */
 }
 
-
-/* ==========================================================================
-   Side Panel
-   ========================================================================== */
-
+/* پنل میانی (Side Panel) */
 #sidePanel {
-    background-color: #f7f7f7;
-    border-right: 1px solid #dcdcdc;
+    background-color: #F8F9FA;
+    border-right: 1px solid #DADCE0;
 }
-
 #sideTitle {
-    color: #202124;
-    font-size: 10pt;
-    font-weight: 500;
-    padding: 0px 0px 6px 0px;
+    color: #5F6368;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 10px;
 }
 
-
-/* ==========================================================================
-   Middle List Buttons
-   ========================================================================== */
-
-#middleListButton {
-    background-color: #ffffff;
-    color: #202124;
-    border: 1px solid #d0d0d0;
-    border-radius: 4px;
-    padding: 6px 10px;
-    text-align: center;
-}
-
-#middleListButton:hover {
-    background-color: #e8f0fe;
-    color: #174ea6;
-    border: 1px solid #1a73e8;
-}
-
-#middleListButton:pressed {
-    background-color: #d2e3fc;
-}
-
-#middleListButton:disabled {
-    background-color: #eeeeee;
-    color: #999999;
-    border: 1px solid #dddddd;
-}
-
-
-/* ==========================================================================
-   Content Panel
-   ========================================================================== */
-
-#contentPanel {
-    background-color: #ffffff;
+/* --- رفع مشکل اساسی لیست ESRB و سایر لیست‌ها --- */
+QListWidget {
+    background-color: #FFFFFF;
     border: none;
+    outline: none; /* حذف خط تیره دور کل لیست */
 }
 
+QListWidget::item {
+    padding: 12px 15px;
+    border-bottom: 1px solid #F1F3F4;
+    color: #3C4043;
+}
+
+/* حالت هاور: جایگزین شدن رنگ مشکی با خاکستری بسیار روشن */
+QListWidget::item:hover {
+    background-color: #F8F9FA;
+    color: #202124;
+}
+
+/* حالت انتخاب شده: متن آبی روی پس‌زمینه آبی روشن */
+QListWidget::item:selected {
+    background-color: #E8F0FE;
+    color: #1A73E8;
+    font-weight: 500;
+}
+
+/* وقتی فوکوس از روی لیست برداشته می‌شود هم رنگ ثابت بماند */
+QListWidget::item:selected:active, QListWidget::item:selected:!active {
+    background-color: #E8F0FE;
+    color: #1A73E8;
+}
+
+/* اسکرول‌بار مدرن و ظریف */
+QScrollBar:vertical {
+    background: transparent;
+    width: 6px;
+    margin: 0;
+}
+QScrollBar::handle:vertical {
+    background: #DADCE0;
+    border-radius: 3px;
+    min-height: 20px;
+}
+QScrollBar::handle:vertical:hover {
+    background: #BDC1C6;
+}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0;
+}
+
+/* محیط محتوا (سمت راست) */
+#contentPanel {
+    background-color: #FFFFFF;
+}
 #contentTitle {
     color: #202124;
-    font-size: 10pt;
+    font-size: 18px;
 }
-
-#contentWidget {
-    background-color: #ffffff;
-    color: #202124;
-}
-
-
-/* ==========================================================================
-   General Controls
-   ========================================================================== */
-
-QLabel {
-    color: #202124;
-}
-
-QPushButton {
-    outline: none;
-}
-
-QLineEdit,
-QTextEdit,
-QPlainTextEdit,
-QComboBox,
-QSpinBox,
-QDoubleSpinBox,
-QDateE"""
+"""

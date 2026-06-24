@@ -1,561 +1,272 @@
 import sys
 import os
+import re
 
 from PyQt6.QtWidgets import (
-    QApplication,
-    QMainWindow,
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QLabel,
-    QPushButton,
-    QScrollArea,
-    QMenuBar
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QLabel, QPushButton, QScrollArea, QMenuBar, QSizePolicy
 )
-
-from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtGui import QAction, QIcon, QPixmap, QPainter
 from PyQt6.QtSvg import QSvgRenderer
-from PyQt6.QtCore import QByteArray, QSize
-from PyQt6.QtGui import QAction, QIcon
-from PyQt6.QtCore import Qt, QSize
-from PyQt6.QtGui import QPainter
+from PyQt6.QtCore import Qt, QSize, QByteArray
+
 
 from app.gui.components.esrb_list import EsrbsListWidget
+from app.gui.components.esrb_list import EsrbsListWidget
+from app.gui.components.esrb_list import EsrbsListWidget
+from app.gui.components.esrb_list import EsrbsListWidget
+from app.gui.components.esrb_list import EsrbsListWidget
+from app.gui.components.esrb_list import EsrbsListWidget
+
+
 from app.gui.resources.themes.dark_theme import DARK_THEME
 from app.gui.resources.themes.light_theme import LIGHT_THEME
 
-
 class MainWindow(QMainWindow):
-
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Library Manager")
-        self.resize(1200, 700)
+        self.resize(1200, 720)
 
-        # مسیر آیکون‌ها
+        # Path setup
         current_dir = os.path.dirname(os.path.abspath(__file__))
         self.icons_dir = os.path.join(current_dir, "resources", "icons")
 
-        # =========================================================
-        # Choose Theme
-        # =========================================================
-
+        # Theme state
         self.current_theme = "dark"
+        self.sidebar_buttons = {}
 
-        # =========================================================
-        # Central Widget
-        # =========================================================
+        # UI Initialization
+        self.setup_ui()
+        self.setup_menu_bar()
+        
+        # Default selection
+        self.on_sidebar_clicked("book")
+        
+        # Apply theme
+        self.apply_dark_theme()
 
+    def setup_ui(self):
+        """Main UI Layout Construction."""
         central = QWidget()
         central.setObjectName("centralWidget")
         self.setCentralWidget(central)
 
-        main_layout = QVBoxLayout(central)
-        main_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.setSpacing(0)
+        self.main_layout = QVBoxLayout(central)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.setSpacing(0)
 
-        # =========================================================
-        # Menu Bar
-        # =========================================================
+        # Panels Container
+        self.panels_container = QWidget()
+        self.panels_container.setObjectName("panelsContainer")
+        self.panels_layout = QHBoxLayout(self.panels_container)
+        self.panels_layout.setContentsMargins(0, 0, 0, 0)
+        self.panels_layout.setSpacing(0)
 
-        self.menu_bar = QMenuBar()
+        self.setup_activity_bar()
+        self.setup_side_panel()
+        self.setup_content_area()
+
+        self.main_layout.addWidget(self.panels_container, stretch=1)
+
+    def setup_menu_bar(self):
+        """Configure the top menu bar."""
+        # استفاده از منوبار پیش‌فرض QMainWindow برای پایداری بیشتر
+        self.menu_bar = self.menuBar()
         self.menu_bar.setObjectName("mainMenuBar")
-        main_layout.addWidget(self.menu_bar)
 
+        # Books Menu
         books_menu = self.menu_bar.addMenu("Books")
         for item in ["View All", "Add", "Edit", "Delete", "Search"]:
             books_menu.addAction(QAction(item, self))
 
+        # Data Menu
         data_menu = self.menu_bar.addMenu("Data")
-        for item in [
-            "Author",
-            "Genre",
-            "Language",
-            "Publisher",
-            "Translator",
-            "Resource",
-            "Esrb"
-        ]:
+        for item in ["Author", "Genre", "Language", "Publisher", "Translator", "Resource", "Esrb"]:
             data_menu.addAction(QAction(item, self))
 
+        # Rent Menu
         rent_menu = self.menu_bar.addMenu("Rent")
         for item in ["Issue Book", "Return Book", "All Rentals", "Overdue"]:
             rent_menu.addAction(QAction(item, self))
 
+        # Settings Menu
         settings_menu = self.menu_bar.addMenu("Settings")
-
-        home_action = QAction("Home", self)
-        options_action = QAction("Options", self)
-
-        settings_menu.addAction(home_action)
-        settings_menu.addAction(options_action)
-        settings_menu.addSeparator()
-
         appearance_menu = settings_menu.addMenu("Appearance")
-
+        
         dark_action = QAction("Dark Theme", self)
         light_action = QAction("Light Theme", self)
-
+        dark_action.triggered.connect(self.apply_dark_theme)
+        light_action.triggered.connect(self.apply_light_theme)
+        
         appearance_menu.addAction(dark_action)
         appearance_menu.addAction(light_action)
 
-        dark_action.triggered.connect(self.apply_dark_theme)
-        light_action.triggered.connect(self.apply_light_theme)
-
+        # Help Menu
         help_menu = self.menu_bar.addMenu("Help")
-        for item in ["Guide", "About", "Exit"]:
-            help_menu.addAction(QAction(item, self))
+        help_menu.addAction(QAction("Guide", self))
 
-        # =========================================================
-        # Panels Container
-        # =========================================================
-
-        panels = QWidget()
-        panels.setObjectName("panelsContainer")
-
-        panels_layout = QHBoxLayout(panels)
-        panels_layout.setContentsMargins(0, 0, 0, 0)
-        panels_layout.setSpacing(0)
-
-        main_layout.addWidget(panels, stretch=1)
-
-        # =========================================================
-        # Panel 1 — Activity Bar
-        # =========================================================
-
+    def setup_activity_bar(self):
+        """Left vertical bar with icons."""
         self.activity_bar = QWidget()
         self.activity_bar.setObjectName("activityBar")
         self.activity_bar.setFixedWidth(60)
 
-        activity_layout = QVBoxLayout(self.activity_bar)
-        activity_layout.setContentsMargins(6, 10, 6, 10)
-        activity_layout.setSpacing(0)
+        layout = QVBoxLayout(self.activity_bar)
+        layout.setContentsMargins(0, 10, 0, 10)
+        layout.setSpacing(0)
 
         scroll = QScrollArea()
         scroll.setObjectName("activityScrollArea")
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QScrollArea.Shape.NoFrame)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
-        scroll_content = QWidget()
-        scroll_content.setObjectName("activityScrollContent")
+        content = QWidget()
+        content.setObjectName("activityScrollContent")
+        self.scroll_layout = QVBoxLayout(content)
+        self.scroll_layout.setContentsMargins(0, 0, 0, 0)
+        self.scroll_layout.setSpacing(8)
+        self.scroll_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        scroll_layout = QVBoxLayout(scroll_content)
-        scroll_layout.setContentsMargins(0, 0, 0, 0)
-        scroll_layout.setSpacing(8)
-        scroll_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-
-        # Sidebar buttons definition
-        sidebar_buttons = [
-            {
-                "id": "book",
-                "tooltip": "Books",
-                "icon": "book.svg",
-                "fallback": "BO"
-            },
-            {
-                "id": "author",
-                "tooltip": "Authors",
-                "icon": "author.svg",
-                "fallback": "AU"
-            },
-            {
-                "id": "translator",
-                "tooltip": "Translators",
-                "icon": "translator.svg",
-                "fallback": "TR"
-            },
-            {
-                "id": "language",
-                "tooltip": "Languages",
-                "icon": "language.svg",
-                "fallback": "LA"
-            },
-            {
-                "id": "publisher",
-                "tooltip": "Publishers",
-                "icon": "publisher.svg",
-                "fallback": "PU"
-            },
-            {
-                "id": "genre",
-                "tooltip": "Genres",
-                "icon": "genre.svg",
-                "fallback": "GE"
-            },
-            {
-                "id": "resource",
-                "tooltip": "Resources",
-                "icon": "resource.svg",
-                "fallback": "RE"
-            },
-            {
-                "id": "esrb",
-                "tooltip": "ESRB",
-                "icon": "esrb.svg",
-                "fallback": "ES"
-            },
+        items = [
+            {"id": "book", "tooltip": "Books", "icon": "book.svg", "fallback": "BO"},
+            {"id": "author", "tooltip": "Authors", "icon": "author.svg", "fallback": "AU"},
+            {"id": "translator", "tooltip": "Translators", "icon": "translator.svg", "fallback": "TR"},
+            {"id": "language", "tooltip": "Languages", "icon": "language.svg", "fallback": "LA"},
+            {"id": "publisher", "tooltip": "Publishers", "icon": "publisher.svg", "fallback": "PU"},
+            {"id": "genre", "tooltip": "Genres", "icon": "genre.svg", "fallback": "GE"},
+            {"id": "resource", "tooltip": "Resources", "icon": "resource.svg", "fallback": "RE"},
+            {"id": "esrb", "tooltip": "ESRB", "icon": "esrb.svg", "fallback": "ES"},
         ]
 
-        self.sidebar_buttons = {}
+        for data in items:
+            self.create_sidebar_button(data)
 
-        for btn_data in sidebar_buttons:
+        scroll.setWidget(content)
+        layout.addWidget(scroll)
+        self.panels_layout.addWidget(self.activity_bar)
 
-            btn_id = btn_data["id"]
+    def create_sidebar_button(self, data):
+        """Helper to create sidebar button with indicator."""
+        btn_id = data["id"]
+        container = QWidget()
+        container.setObjectName("activityButtonContainer")
+        c_layout = QHBoxLayout(container)
+        c_layout.setContentsMargins(0, 0, 0, 0)
+        c_layout.setSpacing(0)
 
-            container = QWidget()
-            container.setObjectName("activityButtonContainer")
+        indicator = QWidget()
+        indicator.setObjectName("activityIndicator")
+        indicator.setFixedWidth(4)
 
-            container_layout = QHBoxLayout(container)
-            container_layout.setContentsMargins(0, 0, 0, 0)
-            container_layout.setSpacing(0)
+        btn = QPushButton()
+        btn.setObjectName("activityButton")
+        btn.setToolTip(data["tooltip"])
+        btn.setFixedSize(56, 44)
+        btn.setIconSize(QSize(24, 24))
+        btn.clicked.connect(lambda _, b_id=btn_id: self.on_sidebar_clicked(b_id))
 
-            # indicator
-            indicator = QWidget()
-            indicator.setObjectName("activityIndicator")
-            indicator.setFixedWidth(4)
+        c_layout.addWidget(indicator)
+        c_layout.addWidget(btn)
+        self.scroll_layout.addWidget(container)
 
-            btn = QPushButton()
-            btn.setObjectName("activityButton")
-            btn.setToolTip(btn_data["tooltip"])
-            btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.sidebar_buttons[btn_id] = {
+            "button": btn, "indicator": indicator, "icon_name": data["icon"], "fallback": data["fallback"]
+        }
 
-            # بسیار مهم برای اینکه دکمه از کادر بیرون نزند
-            btn.setFixedSize(44, 44)
-            btn.setIconSize(QSize(24, 24))
-
-            icon_path = os.path.join(self.icons_dir, btn_data["icon"])
-
-            if os.path.exists(icon_path):
-                btn.setIcon(QIcon(icon_path))
-                btn.setText("")
-            else:
-                btn.setText(btn_data["fallback"])
-                print(f"⚠️ پیدا نشد: {icon_path}")
-
-            btn.clicked.connect(
-                lambda checked, b_id=btn_id: self.on_sidebar_clicked(b_id)
-            )
-
-            container_layout.addWidget(indicator)
-            container_layout.addWidget(btn)
-
-                
-            # ... (داخل حلقه for btn_data in sidebar_buttons) ...
-            self.sidebar_buttons[btn_id] = {
-                    "button": btn,
-                    "indicator": indicator,
-                    "container": container,
-                    "icon_name": btn_data["icon"]  # نام آیکون را ذخیره کنید تا راحت‌تر دسترسی داشته باشید
-                }
-            
-
-
-            scroll_layout.addWidget(container)
-
-        scroll_layout.addStretch()
-
-        scroll.setWidget(scroll_content)
-        activity_layout.addWidget(scroll)
-
-        # =========================================================
-        # Panel 2 — Sidebar List
-        # =========================================================
-
+    def setup_side_panel(self):
+        """Middle list panel."""
         self.side_panel = QWidget()
         self.side_panel.setObjectName("sidePanel")
         self.side_panel.setFixedWidth(260)
-
         self.side_layout = QVBoxLayout(self.side_panel)
         self.side_layout.setContentsMargins(12, 12, 12, 12)
-        self.side_layout.setSpacing(8)
+        self.panels_layout.addWidget(self.side_panel)
 
-        self.side_placeholder = QLabel("Select a section")
-        self.side_placeholder.setObjectName("sidePlaceholder")
-        self.side_placeholder.setAlignment(Qt.AlignmentFlag.AlignTop)
-
-        self.side_layout.addWidget(self.side_placeholder)
-        self.side_layout.addStretch()
-
-        # =========================================================
-        # Panel 3 — Content Area
-        # =========================================================
-
+    def setup_content_area(self):
+        """Main viewing area."""
         self.content_panel = QWidget()
         self.content_panel.setObjectName("contentPanel")
-
-        content_layout = QVBoxLayout(self.content_panel)
-        content_layout.setContentsMargins(20, 20, 20, 20)
-        content_layout.setSpacing(10)
-
-        self.content_label = QLabel("Content Area")
+        self.content_layout = QVBoxLayout(self.content_panel)
+        self.content_label = QLabel("Welcome")
         self.content_label.setObjectName("contentTitle")
         self.content_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.content_layout.addWidget(self.content_label)
+        self.panels_layout.addWidget(self.content_panel, stretch=1)
 
-        content_layout.addWidget(self.content_label)
-
-        # =========================================================
-        # Add Panels
-        # =========================================================
-
-        panels_layout.addWidget(self.activity_bar)
-        panels_layout.addWidget(self.side_panel)
-        panels_layout.addWidget(self.content_panel, stretch=1)
-
-        # =========================================================
-        # Apply Default Theme
-        # =========================================================
-
-        self.apply_dark_theme()
-
-    # =========================================================
-    # Sidebar Click Logic
-    # =========================================================
-
+    # --- Sidebar Logic ---
     def on_sidebar_clicked(self, section):
-
-        # reset indicators
-        for item in self.sidebar_buttons.values():
-            item["indicator"].setProperty("active", False)
-            item["button"].setProperty("active", False)
-
+        for btn_id, item in self.sidebar_buttons.items():
+            active = (btn_id == section)
+            item["indicator"].setProperty("active", active)
+            item["button"].setProperty("active", active)
             item["indicator"].style().unpolish(item["indicator"])
             item["indicator"].style().polish(item["indicator"])
-
             item["button"].style().unpolish(item["button"])
             item["button"].style().polish(item["button"])
 
-        # activate selected indicator
-        selected = self.sidebar_buttons.get(section)
-
-        if selected:
-            selected["indicator"].setProperty("active", True)
-            selected["button"].setProperty("active", True)
-
-            selected["indicator"].style().unpolish(selected["indicator"])
-            selected["indicator"].style().polish(selected["indicator"])
-
-            selected["button"].style().unpolish(selected["button"])
-            selected["button"].style().polish(selected["button"])
-
-        # clear side panel
         self.clear_side_panel()
-
-        # title
-        title = QLabel(self.get_section_title(section))
+        title = QLabel(section.upper())
         title.setObjectName("sideTitle")
         self.side_layout.addWidget(title)
 
-        # Load proper widget in middle panel
-        if section == "esrb":
-            widget = EsrbsListWidget()
-            widget.setObjectName("middleListWidget")
-            self.side_layout.addWidget(widget)
-
-        elif section == "book":
-            self.add_middle_button("View All Books", "books")
-            self.add_middle_button("Add Book", "add book")
-            self.add_middle_button("Edit Book", "edit book")
-            self.add_middle_button("Delete Book", "delete book")
-            self.add_middle_button("Search Book", "search book")
-
-        elif section == "author":
-            self.add_middle_button("View All Authors", "authors")
-            self.add_middle_button("Add Author", "add author")
-            self.add_middle_button("Edit Author", "edit author")
-            self.add_middle_button("Delete Author", "delete author")
-            self.add_middle_button("Search Author", "search author")
-
-        elif section == "genre":
-            self.add_middle_button("View All Genres", "genres")
-            self.add_middle_button("Add Genre", "add genre")
-            self.add_middle_button("Edit Genre", "edit genre")
-            self.add_middle_button("Delete Genre", "delete genre")
-            self.add_middle_button("Search Genre", "search genre")
-
-        elif section == "language":
-            self.add_middle_button("View All Languages", "languages")
-            self.add_middle_button("Add Language", "add language")
-            self.add_middle_button("Edit Language", "edit language")
-            self.add_middle_button("Delete Language", "delete language")
-            self.add_middle_button("Search Language", "search language")
-
-        elif section == "publisher":
-            self.add_middle_button("View All Publishers", "publishers")
-            self.add_middle_button("Add Publisher", "add publisher")
-            self.add_middle_button("Edit Publisher", "edit publisher")
-            self.add_middle_button("Delete Publisher", "delete publisher")
-            self.add_middle_button("Search Publisher", "search publisher")
-
-        elif section == "translator":
-            self.add_middle_button("View All Translators", "translators")
-            self.add_middle_button("Add Translator", "add translator")
-            self.add_middle_button("Edit Translator", "edit translator")
-            self.add_middle_button("Delete Translator", "delete translator")
-            self.add_middle_button("Search Translator", "search translator")
-
-        elif section == "resource":
-            self.add_middle_button("View All Resources", "resources")
-            self.add_middle_button("Add Resource", "add resource")
-            self.add_middle_button("Edit Resource", "edit resource")
-            self.add_middle_button("Delete Resource", "delete resource")
-            self.add_middle_button("Search Resource", "search resource")
-
+        if section == "esrb" and EsrbsListWidget:
+            self.side_layout.addWidget(EsrbsListWidget())
         else:
-            coming_soon = QLabel("Coming soon...")
-            coming_soon.setObjectName("sidePlaceholder")
-            self.side_layout.addWidget(coming_soon)
+            self.side_layout.addWidget(QLabel(f"List of {section}"))
 
         self.side_layout.addStretch()
-
-        # update content panel title
-        self.change_content(section)
-
-    # =========================================================
-    # Side Panel Helpers
-    # =========================================================
+        self.content_label.setText(f"{section.title()} View")
 
     def clear_side_panel(self):
         while self.side_layout.count():
             item = self.side_layout.takeAt(0)
+            if item.widget(): item.widget().deleteLater()
 
-            widget = item.widget()
-
-            if widget:
-                widget.deleteLater()
-
-    def add_middle_button(self, title, content_key):
-        btn = QPushButton(title)
-        btn.setObjectName("middleListButton")
-        btn.setCursor(Qt.CursorShape.PointingHandCursor)
-
-        btn.clicked.connect(
-            lambda checked, text=content_key: self.change_content(text)
-        )
-
-        self.side_layout.addWidget(btn)
-
-    def get_section_title(self, section):
-        titles = {
-            "book": "Books",
-            "author": "Authors",
-            "translator": "Translators",
-            "language": "Languages",
-            "publisher": "Publishers",
-            "genre": "Genres",
-            "resource": "Resources",
-            "esrb": "ESRB Ratings",
-        }
-
-        return titles.get(section, section.capitalize())
-
-    # =========================================================
-    # Content Change
-    # =========================================================
-
-    def change_content(self, text):
-        self.content_label.setText(f"{text.title()} View")
-
-    # =========================================================
-    # Theme Handlers
-    # =========================================================
-
+    # --- Theme Handlers ---
     def apply_dark_theme(self):
         self.current_theme = "dark"
         self.setStyleSheet(DARK_THEME)
-        self.update_sidebar_icons() # آیکون‌ها سفید می‌شوند
-        self.refresh_dynamic_styles()
+        self.update_sidebar_icons("#FFFFFF")
 
     def apply_light_theme(self):
         self.current_theme = "light"
         self.setStyleSheet(LIGHT_THEME)
-        self.update_sidebar_icons() # آیکون‌ها مشکی می‌شوند
-        self.refresh_dynamic_styles()
+        self.update_sidebar_icons("#202124")
 
-    def refresh_dynamic_styles(self):
-        """
-        وقتی property هایی مثل active تغییر می‌کنند،
-        برای اعمال دوباره stylesheet باید polish/unpolish انجام شود.
-        """
+    def update_sidebar_icons(self, color):
+        for btn_id, item in self.sidebar_buttons.items():
+            icon = self.get_colored_icon(item["icon_name"], color)
+            if icon: item["button"].setIcon(icon)
 
-        for item in self.sidebar_buttons.values():
-
-            indicator = item["indicator"]
-            button = item["button"]
-
-            indicator.style().unpolish(indicator)
-            indicator.style().polish(indicator)
-
-            button.style().unpolish(button)
-            button.style().polish(button)
-
-    # =========================================================
-    # Icons Handlers
-    # =========================================================
-
-    # ۳. اصلاح متد رنگ‌آمیزی SVG (برای جلوگیری از خطای رندرینگ):
-    def get_colored_icon(self, icon_name, color_hex):
-        icon_path = os.path.join(self.icons_dir, icon_name)
-        if not os.path.exists(icon_path):
-            return None
-
+    def get_colored_icon(self, name, color):
+        path = os.path.join(self.icons_dir, name)
+        if not os.path.exists(path): return None
         try:
-            with open(icon_path, 'r', encoding='utf-8') as f:
-                svg_data = f.read()
-
-            import re
-            # جایگزینی هوشمندانه رنگ‌ها
-            if 'fill=' in svg_data:
-                svg_data = re.sub(r'fill="[^"]+"', f'fill="{color_hex}"', svg_data)
-            else:
-                svg_data = svg_data.replace('<svg ', f'<svg fill="{color_hex}" ')
-
-            if 'stroke=' in svg_data:
-                svg_data = re.sub(r'stroke="[^"]+"', f'stroke="{color_hex}"', svg_data)
-
-            renderer = QSvgRenderer(QByteArray(svg_data.encode('utf-8')))
-            pixmap = QPixmap(QSize(24, 24))
-            pixmap.fill(Qt.GlobalColor.transparent)
+            with open(path, 'r') as f:
+                data = f.read()
             
+            # ۱. جایگزینی تمام رنگ‌های هاردکد شده (مشکی یا هر رنگ دیگر) با رنگ تم
+            data = re.sub(r'fill="[^"]+"', f'fill="{color}"', data)
+            data = re.sub(r'stroke="[^"]+"', f'stroke="{color}"', data)
+            
+            # ۲. اگر SVG استایل داخلی داشت (برای آیکون‌های پیچیده مثل ESRB)
+            data = data.replace('fill:#000000', f'fill:{color}')
+            data = data.replace('stroke:#000000', f'stroke:{color}')
 
+            # ۳. حذف هرگونه شفافیت که باعث محو شدن می‌شود
+            data = re.sub(r'fill-opacity="[^"]+"', 'fill-opacity="1.0"', data)
+            data = re.sub(r'opacity="[^"]+"', 'opacity="1.0"', data)
+            
+            renderer = QSvgRenderer(QByteArray(data.encode()))
+            pixmap = QPixmap(24, 24)
+            pixmap.fill(Qt.GlobalColor.transparent)
             painter = QPainter(pixmap)
             renderer.render(painter)
             painter.end()
-            
             return QIcon(pixmap)
-        except Exception as e:
-            print(f"Error coloring icon {icon_name}: {e}")
+        except:
             return None
 
-    
-    def update_sidebar_icons(self):
-        icon_color = "#FFFFFF" if self.current_theme == "dark" else "#000000"
-        
-        for btn_id, item in self.sidebar_buttons.items():
-            btn_obj = item["button"]      # دسترسی درست به شیء دکمه
-            icon_file = item["icon_name"] # دسترسی به نام فایل آیکون
-            
-            new_icon = self.get_colored_icon(icon_file, icon_color)
-            
-            if new_icon:
-                btn_obj.setIcon(new_icon)
-                btn_obj.setText("")
-            else:
-                # پیدا کردن فالبک از لیست اولیه یا استفاده از دو حرف اول
-                btn_obj.setText(btn_id[:2].upper())
 
-
-# =========================================================
-# Application Start
-# =========================================================
-
-if __name__ == "__main__":
-
-    app = QApplication(sys.argv)
-
-    window = MainWindow()
-    window.show()
-
-    sys.exit(app.exec())

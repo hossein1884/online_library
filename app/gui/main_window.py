@@ -11,13 +11,14 @@ from PyQt6.QtSvg import QSvgRenderer
 from PyQt6.QtCore import Qt, QSize, QByteArray
 
 
-from app.gui.components.esrb_list import EsrbsListWidget
+from app.gui.components.esrbs_list import EsrbsListWidget
 from app.gui.components.authors_list import AuthorsListWidget
-from app.gui.components.esrb_list import EsrbsListWidget
-from app.gui.components.esrb_list import EsrbsListWidget
-from app.gui.components.esrb_list import EsrbsListWidget
-from app.gui.components.esrb_list import EsrbsListWidget
-
+from app.gui.components.books_list import BooksListWidget
+from app.gui.components.genres_list import GenresListWidget
+from app.gui.components.languages_list import LanguagesListWidget
+from app.gui.components.publishers_list import PublishersListWidget
+from app.gui.components.resorces_list import ResourcesListWidget
+from app.gui.components.translators_list import TranslatorsListWidget
 
 from app.gui.resources.themes.dark_theme import DARK_THEME
 from app.gui.resources.themes.light_theme import LIGHT_THEME
@@ -211,10 +212,31 @@ class MainWindow(QMainWindow):
         title.setObjectName("sideTitle")
         self.side_layout.addWidget(title)
 
+        
         if section == "esrb" and EsrbsListWidget:
             self.side_layout.addWidget(EsrbsListWidget())
+        
         elif section == "author" and AuthorsListWidget:
             self.side_layout.addWidget(AuthorsListWidget())
+        
+        elif section == "book" and BooksListWidget:
+            self.side_layout.addWidget(BooksListWidget())
+        
+        elif section == "genre" and GenresListWidget:
+            self.side_layout.addWidget(GenresListWidget())
+        
+        elif section == "language" and LanguagesListWidget:
+            self.side_layout.addWidget(LanguagesListWidget())
+        
+        elif section == "publisher" and PublishersListWidget:
+            self.side_layout.addWidget(PublishersListWidget())
+        
+        elif section == "resource" and ResourcesListWidget:
+            self.side_layout.addWidget(ResourcesListWidget())
+
+        elif section == "translator" and TranslatorsListWidget:
+            self.side_layout.addWidget(TranslatorsListWidget())
+        
         else:
             self.side_layout.addWidget(QLabel(f"List of {section}"))
 

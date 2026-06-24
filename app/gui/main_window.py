@@ -13,8 +13,12 @@ from PyQt6.QtWidgets import (
     QMenuBar
 )
 
+from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtSvg import QSvgRenderer
+from PyQt6.QtCore import QByteArray, QSize
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtGui import QPainter
 
 from app.gui.components.esrb_list import EsrbsListWidget
 from app.gui.resources.themes.dark_theme import DARK_THEME
@@ -238,11 +242,16 @@ class MainWindow(QMainWindow):
             container_layout.addWidget(indicator)
             container_layout.addWidget(btn)
 
+                
+            # ... (داخل حلقه for btn_data in sidebar_buttons) ...
             self.sidebar_buttons[btn_id] = {
-                "button": btn,
-                "indicator": indicator,
-                "container": container
-            }
+                    "button": btn,
+                    "indicator": indicator,
+                    "container": container,
+                    "icon_name": btn_data["icon"]  # نام آیکون را ذخیره کنید تا راحت‌تر دسترسی داشته باشید
+                }
+            
+
 
             scroll_layout.addWidget(container)
 
@@ -456,11 +465,13 @@ class MainWindow(QMainWindow):
     def apply_dark_theme(self):
         self.current_theme = "dark"
         self.setStyleSheet(DARK_THEME)
+        self.update_sidebar_icons() # آیکون‌ها سفید می‌شوند
         self.refresh_dynamic_styles()
 
     def apply_light_theme(self):
         self.current_theme = "light"
         self.setStyleSheet(LIGHT_THEME)
+        self.update_sidebar_icons() # آیکون‌ها مشکی می‌شوند
         self.refresh_dynamic_styles()
 
     def refresh_dynamic_styles(self):
@@ -479,6 +490,61 @@ class MainWindow(QMainWindow):
 
             button.style().unpolish(button)
             button.style().polish(button)
+
+    # =========================================================
+    # Icons Handlers
+    # =========================================================
+
+    # ۳. اصلاح متد رنگ‌آمیزی SVG (برای جلوگیری از خطای رندرینگ):
+    def get_colored_icon(self, icon_name, color_hex):
+        icon_path = os.path.join(self.icons_dir, icon_name)
+        if not os.path.exists(icon_path):
+            return None
+
+        try:
+            with open(icon_path, 'r', encoding='utf-8') as f:
+                svg_data = f.read()
+
+            import re
+            # جایگزینی هوشمندانه رنگ‌ها
+            if 'fill=' in svg_data:
+                svg_data = re.sub(r'fill="[^"]+"', f'fill="{color_hex}"', svg_data)
+            else:
+                svg_data = svg_data.replace('<svg ', f'<svg fill="{color_hex}" ')
+
+            if 'stroke=' in svg_data:
+                svg_data = re.sub(r'stroke="[^"]+"', f'stroke="{color_hex}"', svg_data)
+
+            renderer = QSvgRenderer(QByteArray(svg_data.encode('utf-8')))
+            pixmap = QPixmap(QSize(24, 24))
+            pixmap.fill(Qt.GlobalColor.transparent)
+            
+
+            painter = QPainter(pixmap)
+            renderer.render(painter)
+            painter.end()
+            
+            return QIcon(pixmap)
+        except Exception as e:
+            print(f"Error coloring icon {icon_name}: {e}")
+            return None
+
+    
+    def update_sidebar_icons(self):
+        icon_color = "#FFFFFF" if self.current_theme == "dark" else "#000000"
+        
+        for btn_id, item in self.sidebar_buttons.items():
+            btn_obj = item["button"]      # دسترسی درست به شیء دکمه
+            icon_file = item["icon_name"] # دسترسی به نام فایل آیکون
+            
+            new_icon = self.get_colored_icon(icon_file, icon_color)
+            
+            if new_icon:
+                btn_obj.setIcon(new_icon)
+                btn_obj.setText("")
+            else:
+                # پیدا کردن فالبک از لیست اولیه یا استفاده از دو حرف اول
+                btn_obj.setText(btn_id[:2].upper())
 
 
 # =========================================================

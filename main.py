@@ -9,5 +9,5 @@ if __name__ == "__main__":
     # ساخت و نمایش پنجره اصلی
     window = MainWindow()
     window.showMaximized()
-    
+
     sys.exit(app.exec())

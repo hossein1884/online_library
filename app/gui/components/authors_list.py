@@ -1,10 +1,10 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel
 from PyQt6.QtCore import Qt
 
-from app.api.adapters.esrbs_data_adapter import EsrbsDataAdapter
+from app.api.adapters.authors_data_adapter import AuthorsDataAdapter
 
 
-class EsrbsListWidget(QWidget):
+class AuthorsListWidget(QWidget):
 
     def __init__(self):
         super().__init__()
@@ -19,9 +19,8 @@ class EsrbsListWidget(QWidget):
         # =========================================================
         # Title
         # =========================================================
-        self.title_label = QLabel("ESRB Ratings")
+        self.title_label = QLabel("AUTHOR Ratings")
         self.title_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
-
 
         layout.addWidget(self.title_label)
 
@@ -31,30 +30,29 @@ class EsrbsListWidget(QWidget):
         self.list_widget = QListWidget()
 
 
-
         layout.addWidget(self.list_widget)
 
         # =========================================================
         # Load Data
         # =========================================================
-        self.load_esrbs_data()
+        self.load_authors_data()
 
     # =========================================================
-    # Load ESRB Data
+    # Load AUTHOR Data
     # =========================================================
-    def load_esrbs_data(self):
+    def load_authors_data(self):
 
         self.list_widget.clear()
 
         try:
-            esrbs = EsrbsDataAdapter.get_all()
+            authors = AuthorsDataAdapter.get_all()
 
-            if not esrbs:
-                self.list_widget.addItem("No ESRB ratings found")
+            if not authors:
+                self.list_widget.addItem("No AUTHOR ratings found")
                 return
 
-            for esrb in esrbs:
-                self.list_widget.addItem(esrb.name)
+            for author in authors:
+                self.list_widget.addItem(author.name)
 
         except Exception as e:
             self.list_widget.addItem(f"Error: {str(e)}")

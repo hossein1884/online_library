@@ -12,7 +12,7 @@ from PyQt6.QtCore import Qt, QSize, QByteArray
 
 
 from app.gui.components.esrb_list import EsrbsListWidget
-from app.gui.components.esrb_list import EsrbsListWidget
+from app.gui.components.authors_list import AuthorsListWidget
 from app.gui.components.esrb_list import EsrbsListWidget
 from app.gui.components.esrb_list import EsrbsListWidget
 from app.gui.components.esrb_list import EsrbsListWidget
@@ -213,6 +213,8 @@ class MainWindow(QMainWindow):
 
         if section == "esrb" and EsrbsListWidget:
             self.side_layout.addWidget(EsrbsListWidget())
+        elif section == "author" and AuthorsListWidget:
+            self.side_layout.addWidget(AuthorsListWidget())
         else:
             self.side_layout.addWidget(QLabel(f"List of {section}"))
 

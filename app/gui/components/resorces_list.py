@@ -54,7 +54,7 @@ class ResourcesListWidget(QWidget):
                 return
 
             for resource in resources:
-                self.list_widget.addItem(resource.name)
+                self.list_widget.addItem(resource.title)
 
         except Exception as e:
             self.list_widget.addItem(f"Error: {str(e)}")

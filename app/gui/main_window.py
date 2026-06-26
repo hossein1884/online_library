@@ -6,7 +6,7 @@ from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton, QScrollArea, QMenuBar, QSizePolicy
 )
-from PyQt6.QtGui import QAction, QIcon, QPixmap, QPainter
+from PyQt6.QtGui import QAction, QIcon, QPixmap, QPainter, QColor, QImage
 from PyQt6.QtSvg import QSvgRenderer
 from PyQt6.QtCore import Qt, QSize, QByteArray
 
@@ -282,8 +282,54 @@ class MainWindow(QMainWindow):
 
     def update_sidebar_icons(self, color):
         for btn_id, item in self.sidebar_buttons.items():
-            icon = self.get_colored_icon(item["icon_name"], color)
-            if icon: item["button"].setIcon(icon)
+            if item["icon_name"] == "esrb.svg" and self.current_theme == "light":
+                icon = self.get_inverted_icon(item["icon_name"])
+            else:
+                icon = self.get_colored_icon(item["icon_name"], color)
+
+            if icon:
+                item["button"].setIcon(icon)
+    
+    def get_inverted_icon(self, name):
+        path = os.path.join(self.icons_dir, name)
+        if not os.path.exists(path):
+            return None
+
+        try:
+            renderer = QSvgRenderer(path)
+            if not renderer.isValid():
+                return None
+
+            pixmap = QPixmap(24, 24)
+            pixmap.fill(Qt.GlobalColor.transparent)
+
+            painter = QPainter(pixmap)
+            renderer.render(painter)
+            painter.end()
+
+            image = pixmap.toImage().convertToFormat(QImage.Format.Format_ARGB32)
+
+            for y in range(image.height()):
+                for x in range(image.width()):
+                    color = QColor(image.pixelColor(x, y))
+
+                    if color.alpha() == 0:
+                        continue
+
+                    inverted = QColor(
+                        255 - color.red(),
+                        255 - color.green(),
+                        255 - color.blue(),
+                        color.alpha()
+                    )
+
+                    image.setPixelColor(x, y, inverted)
+
+            return QIcon(QPixmap.fromImage(image))
+
+        except Exception as error:
+            print(f"Icon invert error for {name}: {error}")
+            return None
 
     def get_colored_icon(self, name, color):
         path = os.path.join(self.icons_dir, name)

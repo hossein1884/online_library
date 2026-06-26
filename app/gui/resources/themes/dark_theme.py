@@ -126,6 +126,12 @@ QMenu::separator {
     font-weight: 500;
     padding: 0px 0px 6px 0px;
 }
+#panelsContainer { background-color: #1e1e1e; }
+
+#activityScrollArea, #activityScrollArea > QWidget {
+    background-color: #1b1b1c;
+    border: none;
+}
 
 
 /* ==========================================================================

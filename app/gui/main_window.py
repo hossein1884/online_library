@@ -10,7 +10,6 @@ from PyQt6.QtGui import QAction, QIcon, QPixmap, QPainter
 from PyQt6.QtSvg import QSvgRenderer
 from PyQt6.QtCore import Qt, QSize, QByteArray
 
-
 from app.gui.components.esrbs_list import EsrbsListWidget
 from app.gui.components.authors_list import AuthorsListWidget
 from app.gui.components.books_list import BooksListWidget
@@ -36,6 +35,7 @@ class MainWindow(QMainWindow):
 
         # Theme state
         self.current_theme = "dark"
+        self.current_section = None
         self.sidebar_buttons = {}
 
         # UI Initialization
@@ -198,6 +198,7 @@ class MainWindow(QMainWindow):
 
     # --- Sidebar Logic ---
     def on_sidebar_clicked(self, section):
+        self.current_section = section
         for btn_id, item in self.sidebar_buttons.items():
             active = (btn_id == section)
             item["indicator"].setProperty("active", active)
@@ -242,22 +243,42 @@ class MainWindow(QMainWindow):
 
         self.side_layout.addStretch()
         self.content_label.setText(f"{section.title()} View")
+    
+    def refresh_current_sidebar(self):
+        self.style().unpolish(self)
+        self.style().polish(self)
+        self.update()
+
+        if self.current_section:
+            self.on_sidebar_clicked(self.current_section)
+    
+    def refresh_styles(self):
+        for widget in QApplication.instance().allWidgets():
+            widget.style().unpolish(widget)
+            widget.style().polish(widget)
+            widget.update()
 
     def clear_side_panel(self):
         while self.side_layout.count():
             item = self.side_layout.takeAt(0)
             if item.widget(): item.widget().deleteLater()
-
+    
     # --- Theme Handlers ---
     def apply_dark_theme(self):
         self.current_theme = "dark"
-        self.setStyleSheet(DARK_THEME)
+        app = QApplication.instance()
+        app.setStyleSheet("")
+        app.setStyleSheet(DARK_THEME)
         self.update_sidebar_icons("#FFFFFF")
+        self.refresh_styles()
 
     def apply_light_theme(self):
         self.current_theme = "light"
-        self.setStyleSheet(LIGHT_THEME)
+        app = QApplication.instance()
+        app.setStyleSheet("")
+        app.setStyleSheet(LIGHT_THEME)
         self.update_sidebar_icons("#202124")
+        self.refresh_styles()
 
     def update_sidebar_icons(self, color):
         for btn_id, item in self.sidebar_buttons.items():

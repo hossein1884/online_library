@@ -75,5 +75,5 @@ class LanguagesListWidget(QWidget):
         text = text.lower()
 
         for language in self.languages:
-            if text in language.name.lower():
+            if language.name.lower().startswith(text):
                 self.list_widget.addItem(language.name)

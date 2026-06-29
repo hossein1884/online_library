@@ -75,5 +75,5 @@ class BooksListWidget(QWidget):
         text = text.lower()
 
         for book in self.books:
-            if text in book.name.lower():
+            if book.name.lower().startswith(text):
                 self.list_widget.addItem(book.name)

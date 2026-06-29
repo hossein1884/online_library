@@ -75,5 +75,5 @@ class TranslatorsListWidget(QWidget):
         text = text.lower()
 
         for translator in self.translators:
-            if text in translator.name.lower():
+            if translator.name.lower().startswith(text):
                 self.list_widget.addItem(translator.name)

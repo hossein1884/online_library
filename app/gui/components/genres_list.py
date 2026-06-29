@@ -75,5 +75,5 @@ class GenresListWidget(QWidget):
         text = text.lower()
 
         for genre in self.genres:
-            if text in genre.name.lower():
+            if genre.name.lower().startswith(text):
                 self.list_widget.addItem(genre.name)

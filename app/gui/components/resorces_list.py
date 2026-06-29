@@ -75,5 +75,5 @@ class ResourcesListWidget(QWidget):
         text = text.lower()
 
         for resource in self.resources:
-            if text in resource.name.lower():
+            if resource.name.lower().startswith(text):
                 self.list_widget.addItem(resource.name)

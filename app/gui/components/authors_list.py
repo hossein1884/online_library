@@ -75,5 +75,5 @@ class AuthorsListWidget(QWidget):
         text = text.lower()
 
         for author in self.authors:
-            if text in author.name.lower():
+            if author.name.lower().startswith(text):
                 self.list_widget.addItem(author.name)

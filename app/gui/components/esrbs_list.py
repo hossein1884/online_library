@@ -75,5 +75,5 @@ class EsrbsListWidget(QWidget):
         text = text.lower()
 
         for esrb in self.esrbs:
-            if text in esrb.name.lower():
+            if esrb.name.lower().startswith(text):
                 self.list_widget.addItem(esrb.name)

@@ -75,5 +75,5 @@ class PublishersListWidget(QWidget):
         text = text.lower()
 
         for publisher in self.publishers:
-            if text in publisher.name.lower():
+            if publisher.name.lower().startswith(text):
                 self.list_widget.addItem(publisher.name)

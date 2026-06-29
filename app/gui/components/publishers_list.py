@@ -1,15 +1,15 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel, QLineEdit
 from PyQt6.QtCore import Qt
 
-from app.api.adapters.esrbs_data_adapter import EsrbsDataAdapter
+from app.api.adapters.publishers_data_adapter import PublishersDataAdapter
 
 
-class EsrbsListWidget(QWidget):
+class PublishersListWidget(QWidget):
 
     def __init__(self):
         super().__init__()
 
-        self.esrbs = []
+        self.publishers = []
 
         # =========================================================
         # Main Layout
@@ -21,7 +21,7 @@ class EsrbsListWidget(QWidget):
         # =========================================================
         # Title
         # =========================================================
-        self.title_label = QLabel("ESRB Ratings")
+        self.title_label = QLabel("PUBLISHER Ratings")
         self.title_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         layout.addWidget(self.title_label)
 
@@ -29,7 +29,7 @@ class EsrbsListWidget(QWidget):
         # Search Box
         # =========================================================
         self.search_box = QLineEdit()
-        self.search_box.setPlaceholderText("Search ESRB rating...")
+        self.search_box.setPlaceholderText("Search PUBLISHER rating...")
         self.search_box.textChanged.connect(self.filter_list)
 
         layout.addWidget(self.search_box)
@@ -43,24 +43,24 @@ class EsrbsListWidget(QWidget):
         # =========================================================
         # Load Data
         # =========================================================
-        self.load_esrbs_data()
+        self.load_publishers_data()
 
     # =========================================================
-    # Load ESRB Data
+    # Load PUBLISHER Data
     # =========================================================
-    def load_esrbs_data(self):
+    def load_publishers_data(self):
 
         self.list_widget.clear()
 
         try:
-            self.esrbs = EsrbsDataAdapter.get_all()
+            self.publishers = PublishersDataAdapter.get_all()
 
-            if not self.esrbs:
-                self.list_widget.addItem("No ESRB ratings found")
+            if not self.publishers:
+                self.list_widget.addItem("No PUBLISHER ratings found")
                 return
 
-            for esrb in self.esrbs:
-                self.list_widget.addItem(esrb.name)
+            for publisher in self.publishers:
+                self.list_widget.addItem(publisher.name)
 
         except Exception as e:
             self.list_widget.addItem(f"Error: {str(e)}")
@@ -74,6 +74,6 @@ class EsrbsListWidget(QWidget):
 
         text = text.lower()
 
-        for esrb in self.esrbs:
-            if text in esrb.name.lower():
-                self.list_widget.addItem(esrb.name)
+        for publisher in self.publishers:
+            if text in publisher.name.lower():
+                self.list_widget.addItem(publisher.name)

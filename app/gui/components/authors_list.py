@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel, QLineEdit
 from PyQt6.QtCore import Qt
 
 from app.api.adapters.authors_data_adapter import AuthorsDataAdapter
@@ -8,6 +8,8 @@ class AuthorsListWidget(QWidget):
 
     def __init__(self):
         super().__init__()
+
+        self.authors = []
 
         # =========================================================
         # Main Layout
@@ -21,15 +23,21 @@ class AuthorsListWidget(QWidget):
         # =========================================================
         self.title_label = QLabel("AUTHOR Ratings")
         self.title_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
-
         layout.addWidget(self.title_label)
+
+        # =========================================================
+        # Search Box
+        # =========================================================
+        self.search_box = QLineEdit()
+        self.search_box.setPlaceholderText("Search AUTHOR rating...")
+        self.search_box.textChanged.connect(self.filter_list)
+
+        layout.addWidget(self.search_box)
 
         # =========================================================
         # List Widget
         # =========================================================
         self.list_widget = QListWidget()
-
-
         layout.addWidget(self.list_widget)
 
         # =========================================================
@@ -45,14 +53,27 @@ class AuthorsListWidget(QWidget):
         self.list_widget.clear()
 
         try:
-            authors = AuthorsDataAdapter.get_all()
+            self.authors = AuthorsDataAdapter.get_all()
 
-            if not authors:
+            if not self.authors:
                 self.list_widget.addItem("No AUTHOR ratings found")
                 return
 
-            for author in authors:
+            for author in self.authors:
                 self.list_widget.addItem(author.name)
 
         except Exception as e:
             self.list_widget.addItem(f"Error: {str(e)}")
+
+    # =========================================================
+    # Filter List
+    # =========================================================
+    def filter_list(self, text):
+
+        self.list_widget.clear()
+
+        text = text.lower()
+
+        for author in self.authors:
+            if text in author.name.lower():
+                self.list_widget.addItem(author.name)

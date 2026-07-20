@@ -1,4 +1,6 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel, QLineEdit
+#app/gui/components/resources_list
+
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel, QLineEdit, QSizePolicy
 from PyQt6.QtCore import Qt
 
 from app.api.adapters.resources_data_adapter import ResourcesDataAdapter
@@ -38,6 +40,7 @@ class ResourcesListWidget(QWidget):
         # List Widget
         # =========================================================
         self.list_widget = QListWidget()
+        self.list_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         layout.addWidget(self.list_widget)
 
         # =========================================================

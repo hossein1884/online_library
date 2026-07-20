@@ -1,6 +1,6 @@
 #app/gui/components/books_list
 
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel, QLineEdit,QSizePolicy
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel, QLineEdit, QSizePolicy
 from PyQt6.QtCore import Qt
 
 from app.api.adapters.books_data_adapter import BooksDataAdapter

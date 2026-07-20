@@ -43,7 +43,7 @@ class BooksListWidget(QWidget):
         self.list_widget = QListWidget()
         self.list_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         layout.addWidget(self.list_widget)
-        layout.addWidget(self.list_widget)
+
 
         # =========================================================
         # Load Data

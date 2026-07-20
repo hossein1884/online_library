@@ -1,3 +1,5 @@
+#app/gui/components/authors_list
+
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel, QLineEdit
 from PyQt6.QtCore import Qt
 
@@ -38,6 +40,7 @@ class AuthorsListWidget(QWidget):
         # List Widget
         # =========================================================
         self.list_widget = QListWidget()
+        self.list_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         layout.addWidget(self.list_widget)
 
         # =========================================================

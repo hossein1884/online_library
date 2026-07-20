@@ -60,7 +60,7 @@ class ResourcesListWidget(QWidget):
                 return
 
             for resource in self.resources:
-                self.list_widget.addItem(resource.name)
+                self.list_widget.addItem(resource.title)
 
         except Exception as e:
             self.list_widget.addItem(f"Error: {str(e)}")
@@ -76,4 +76,4 @@ class ResourcesListWidget(QWidget):
 
         for resource in self.resources:
             if resource.name.lower().startswith(text):
-                self.list_widget.addItem(resource.name)
+                self.list_widget.addItem(resource.title)

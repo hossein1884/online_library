@@ -1,4 +1,6 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel, QLineEdit
+#app/gui/components/books_list
+
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QLabel, QLineEdit,QSizePolicy
 from PyQt6.QtCore import Qt
 
 from app.api.adapters.books_data_adapter import BooksDataAdapter
@@ -17,6 +19,7 @@ class BooksListWidget(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(10, 10, 10, 10)
         layout.setSpacing(6)
+
 
         # =========================================================
         # Title
@@ -38,6 +41,8 @@ class BooksListWidget(QWidget):
         # List Widget
         # =========================================================
         self.list_widget = QListWidget()
+        self.list_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        layout.addWidget(self.list_widget)
         layout.addWidget(self.list_widget)
 
         # =========================================================

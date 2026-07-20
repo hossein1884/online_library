@@ -1,3 +1,5 @@
+#app/gui/widgets/main_window
+
 import os
 import re
 
@@ -12,7 +14,8 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QPushButton,
-    QScrollArea,
+    QScrollArea,QSizePolicy
+
 )
 
 from app.gui.components.esrbs_list import EsrbsListWidget
@@ -53,6 +56,19 @@ class MainWindow(QMainWindow):
         self.on_sidebar_clicked("book")
         self.apply_dark_theme()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
     def setup_ui(self):
         """Build the main window layout."""
         central = QWidget()
@@ -75,6 +91,25 @@ class MainWindow(QMainWindow):
         self.setup_content_area()
 
         self.main_layout.addWidget(self.panels_container, stretch=1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def setup_menu_bar(self):
         """Create the top application menu bar."""
@@ -107,6 +142,23 @@ class MainWindow(QMainWindow):
 
         help_menu = self.menu_bar.addMenu("Help")
         help_menu.addAction(QAction("Guide", self))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def setup_activity_bar(self):
         """Create the left sidebar with icon buttons."""
@@ -149,6 +201,24 @@ class MainWindow(QMainWindow):
         layout.addWidget(scroll)
         self.panels_layout.addWidget(self.activity_bar)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     def create_sidebar_button(self, data):
         """Create a single sidebar button with its active indicator."""
         btn_id = data["id"]
@@ -181,6 +251,20 @@ class MainWindow(QMainWindow):
             "icon_name": data["icon"],
         }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     def setup_side_panel(self):
         """Create the middle panel used for section lists."""
         self.side_panel = QWidget()
@@ -191,6 +275,22 @@ class MainWindow(QMainWindow):
         self.side_layout.setContentsMargins(12, 12, 12, 12)
 
         self.panels_layout.addWidget(self.side_panel)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def setup_content_area(self):
         """Create the main content area."""
@@ -205,6 +305,26 @@ class MainWindow(QMainWindow):
 
         self.content_layout.addWidget(self.content_label)
         self.panels_layout.addWidget(self.content_panel, stretch=1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def on_sidebar_clicked(self, section):
         """Handle sidebar button selection and update the side panel."""
@@ -229,26 +349,55 @@ class MainWindow(QMainWindow):
         self.side_layout.addWidget(title)
 
         if section == "esrb":
-            self.side_layout.addWidget(EsrbsListWidget())
-        elif section == "author":
-            self.side_layout.addWidget(AuthorsListWidget())
-        elif section == "book":
-            self.side_layout.addWidget(BooksListWidget())
-        elif section == "genre":
-            self.side_layout.addWidget(GenresListWidget())
-        elif section == "language":
-            self.side_layout.addWidget(LanguagesListWidget())
-        elif section == "publisher":
-            self.side_layout.addWidget(PublishersListWidget())
-        elif section == "resource":
-            self.side_layout.addWidget(ResourcesListWidget())
-        elif section == "translator":
-            self.side_layout.addWidget(TranslatorsListWidget())
-        else:
-            self.side_layout.addWidget(QLabel(f"List of {section}"))
+            widget=EsrbsListWidget()
 
-        self.side_layout.addStretch()
+        
+        elif section == "author":
+            widget=AuthorsListWidget()
+        
+        elif section == "book":
+            widget=BooksListWidget()
+        
+        elif section == "genre":
+            widget=GenresListWidget()
+
+        
+        elif section == "language":
+            widget=LanguagesListWidget()
+        
+        elif section == "publisher":
+            widget=PublishersListWidget()
+        
+        elif section == "resource":
+            widget=ResourcesListWidget()
+
+        
+        elif section == "translator":
+            widget=TranslatorsListWidget()
+        
+        else:
+            widget=QLabel(f"List of {section}")
+    
+        self.side_layout.addWidget(widget)
+        widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        widget.setMinimumWidth(0)
+
         self.content_label.setText(f"{section.title()} View")
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def clear_side_panel(self):
         """Remove all widgets from the side panel layout."""
@@ -258,6 +407,28 @@ class MainWindow(QMainWindow):
             if widget:
                 widget.deleteLater()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     def refresh_styles(self):
         """Force all widgets to refresh after a theme change."""
         app = QApplication.instance()
@@ -265,6 +436,21 @@ class MainWindow(QMainWindow):
             widget.style().unpolish(widget)
             widget.style().polish(widget)
             widget.update()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def apply_dark_theme(self):
         """Apply the dark stylesheet and refresh sidebar icons."""
@@ -277,6 +463,20 @@ class MainWindow(QMainWindow):
         self.update_sidebar_icons("#FFFFFF")
         self.refresh_styles()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     def apply_light_theme(self):
         """Apply the light stylesheet and refresh sidebar icons."""
         self.current_theme = "light"
@@ -288,6 +488,26 @@ class MainWindow(QMainWindow):
         self.update_sidebar_icons("#202124")
         self.refresh_styles()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     def update_sidebar_icons(self, color):
         """Update all sidebar icons based on the active theme."""
         for item in self.sidebar_buttons.values():
@@ -298,6 +518,27 @@ class MainWindow(QMainWindow):
 
             if icon:
                 item["button"].setIcon(icon)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def get_inverted_icon(self, name):
         """Render an SVG icon and invert its visible colors."""
@@ -339,6 +580,24 @@ class MainWindow(QMainWindow):
         except Exception as error:
             print(f"Icon invert error for {name}: {error}")
             return None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def get_colored_icon(self, name, color):
         """Load an SVG icon and replace its fill/stroke colors."""
